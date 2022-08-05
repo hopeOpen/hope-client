@@ -11,9 +11,6 @@ const axiosInstance: AxiosInstance = Axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 标识产品
-    // config.headers['X-ProductName'] = 'pal';
-
     const params: any = {};
     Object.keys(config.params || {}).forEach((key: string) => {
       params[key] = encodeURIComponent(config.params[key]);
