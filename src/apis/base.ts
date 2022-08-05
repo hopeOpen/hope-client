@@ -35,7 +35,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use((response) => {
   const { status, statusText, data: responseData } = response;
   if (status === 200) {
-    if (responseData.code !== -1) {
+    if (responseData.code === 200) {
       return Promise.resolve(responseData.data);
     } else {
       ElMessage({
