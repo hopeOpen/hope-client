@@ -1,5 +1,7 @@
 # hope-client
 
+## typeScript + vue3
+
 ## Project setup
 ```
 yarn install
