@@ -1,0 +1,10 @@
+# scripts/**/*
+node_modules/
+dist
+bin
+public
+iconfont/**/*
+public/**/*
+iconfont.js
+theme/**/*
+*.d.ts

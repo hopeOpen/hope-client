@@ -1,0 +1,46 @@
+/**
+	* 滚动条优化
+	*/
+// 整个滚动条
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: #f7f7f7;
+}
+
+// 滚动条上的按钮 (上下箭头)
+::-webkit-scrollbar-button {
+  display: none;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f7f7f7;
+}
+
+// 滚动条上的滚动滑块
+::-webkit-scrollbar-thumb {
+  border-radius: 7px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #ddd;
+}
+
+// 滚动条轨道
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f7f7f7;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: PingFang SC, STHeitiSC, Helvetica, arial, sans-serif;
+}
+
+main {
+  display: block;
+}

@@ -1,20 +1,29 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    name: "Home",
-    component: Home,
+    path: '/',
+    name: 'Home',
+    component: () =>
+      import(/* webpackChunkName: "home" */ '../views/home/index.vue'),
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    // 个人中心
+    path: '/setting/personalCenter',
+    name: 'PersonalCenter',
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      import(
+        /* webpackChunkName: "personalCenter" */ '../views/setting/personalCenter/index.vue'
+      ),
+  },
+  {
+    // 用户管理
+    path: '/setting/userManagement',
+    name: 'UserManagement',
+    component: () =>
+      import(
+        /* webpackChunkName: "userManagement" */ '../views/setting/userManagement/index.vue'
+      ),
   },
 ];
 

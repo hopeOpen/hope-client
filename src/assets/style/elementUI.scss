@@ -1,0 +1,12 @@
+@import './variables.scss';
+
+
+@import '~element-plus/theme-chalk/index.css';
+
+.el-button {
+  padding: 8px 10px;
+  font-weight: 400;
+  .el-icon {
+    margin-right: 10px
+  }
+}
