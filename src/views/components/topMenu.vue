@@ -19,12 +19,9 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item
-              v-for="item in menus"
-              :key="item.path"
-              :command="item.path"
-              >{{ item.title }}</el-dropdown-item
-            >
+            <el-dropdown-item v-for="item in menus" :key="item.path" :command="item.path">
+              {{ item.title }}
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -43,8 +40,8 @@ export default defineComponent({
     const menus = reactive([
       {
         title: '个人中心',
-        path: '/setting/personalCenter',
-      },
+        path: '/setting/personalCenter'
+      }
     ]);
     // vuex
     const store = useStore();
@@ -67,9 +64,9 @@ export default defineComponent({
       userInfo,
       switchStyle,
       changeCollapse,
-      selectMenu,
+      selectMenu
     };
-  },
+  }
 });
 </script>
 

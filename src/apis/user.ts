@@ -32,3 +32,7 @@ export const updateUserInfo = async (params: UpdateUserInfoType): Promise<any> =
 export const deleteUser = async (params: DeleteUserIdsType): Promise<any> => {
   return $post('/user/delete', params);
 };
+
+export const login = async (params: any): Promise<any> => {
+  return $post('/user/login', params);
+};
