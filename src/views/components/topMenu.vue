@@ -22,6 +22,9 @@
             <el-dropdown-item v-for="item in menus" :key="item.path" :command="item.path">
               {{ item.title }}
             </el-dropdown-item>
+            <el-dropdown-item divided @click="logout">
+              <span style="display: block">退出登陆</span>
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -31,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 export default defineComponent({
   name: 'TopMenu',
@@ -46,6 +49,7 @@ export default defineComponent({
     // vuex
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     // 设置按钮icon样式
     const switchStyle = computed(() => {
       return store.state.isCollapse ? 'open-style' : 'close-style';
@@ -59,12 +63,18 @@ export default defineComponent({
     const selectMenu = (val: string) => {
       router.push(val);
     };
+    // 退出登陆
+    const logout = async () => {
+      await store.dispatch('logout');
+      router.push(`/login?redirect=${route.fullPath}`);
+    };
     return {
       menus,
       userInfo,
       switchStyle,
       changeCollapse,
-      selectMenu
+      selectMenu,
+      logout
     };
   }
 });

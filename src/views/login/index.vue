@@ -29,9 +29,11 @@
 import { reactive } from 'vue';
 import { login } from '../../apis/user';
 import { useRouter, useRoute, LocationQueryRaw } from 'vue-router';
+// import { useStore } from 'vuex';
 import { ElMessage } from 'element-plus';
 const router = useRouter();
 const route = useRoute();
+// const store = useStore();
 const info = reactive({
   name: '',
   password: ''
@@ -53,13 +55,14 @@ const otherQuery = (query: any): LocationQueryRaw => {
 otherQuery(route.query);
 const onSubmit = () => {
   login(info)
-    .then((data) => {
+    .then(async (data) => {
       console.log(data);
       if (data.code === 200) {
         ElMessage({
           message: '登陆成功',
           type: 'success'
         });
+        // await store.dispatch('handleUserMenus');
         setTimeout(() => {
           router.push({ path: redirect || '/', query: { ...otherQuery } });
         }, 500);
