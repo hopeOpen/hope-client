@@ -3,8 +3,13 @@
     <h1>页面</h1>
   </div>
 </template>
-<script>
-export default {};
-</script>
+<script setup lang="ts">
+import { useStore } from 'vuex';
 
-<style lang="scss"></style>
+console.log(useStore());
+</script>
+<style lang="scss">
+.page-wrapper {
+  font-size: 50px;
+}
+</style>

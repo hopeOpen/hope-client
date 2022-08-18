@@ -51,7 +51,7 @@ export default defineComponent({
       router.push(val);
     };
     return {
-      navs: computed(() => store.state.navs),
+      navs: computed(() => store.state.nav.navs),
       isCollapse,
       handleOpen,
       handleClose,
