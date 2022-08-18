@@ -1,15 +1,21 @@
 <template>
   <router-view />
-  <home />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import Home from './views/home/index.vue';
-
+import { computed, defineComponent, ref, watch } from 'vue';
+import { useStore } from 'vuex';
 export default defineComponent({
-  components: {
-    Home
+  setup() {
+    const store = useStore();
+    const hasToken = computed(() => store.getters.getToken);
+    const isHasToken = ref(true);
+    watch(hasToken, () => {
+      console.log(hasToken, isHasToken);
+    });
+    return {
+      hasToken: store.getters.getToken
+    };
   }
 });
 </script>
@@ -23,5 +29,14 @@ body {
 #app {
   width: 100vw;
   height: 100vh;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-out;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

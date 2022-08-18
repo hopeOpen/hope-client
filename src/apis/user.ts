@@ -1,4 +1,4 @@
-import { $post } from './base';
+import { $post, $get } from './base';
 
 import {
   UsersParamsType,
@@ -7,6 +7,11 @@ import {
   UpdateUserInfoType,
   DeleteUserIdsType
 } from '../types/index';
+
+// 获取用户菜单
+export const getUserMenus = (params: any) => {
+  return $get('/user/menus', params);
+};
 
 // 获取用户列表
 export const getUsers = async (params: UsersParamsType): Promise<any> => {

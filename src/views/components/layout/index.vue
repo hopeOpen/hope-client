@@ -1,11 +1,11 @@
 <template>
-  <div id="hope" class="app">
+  <div id="hope" class="hope">
     <!-- 右侧导航 -->
     <hope-nav />
     <!-- 左侧内容区域 -->
-    <main class="app-main">
+    <main class="hope-main">
       <top-menu />
-      <section class="app-main__section">
+      <section class="hope-main__section">
         <transition name="fade" mode="out-in">
           <keep-alive :include="cacheComponents">
             <router-view />
@@ -18,10 +18,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import HopeNav from '../nav/index.vue';
-import TopMenu from '../components/topMenu.vue';
+import HopeNav from '@/views/nav/index.vue';
+import TopMenu from '@/views/components/topMenu.vue';
 export default defineComponent({
-  name: 'Home',
+  name: 'Layout',
   components: {
     HopeNav,
     TopMenu
@@ -45,7 +45,7 @@ export default defineComponent({
   min-width: 900px;
   min-height: 240px;
   overflow: hidden;
-  .app-main {
+  .hope-main {
     flex: 1;
     display: flex;
     flex-direction: column;

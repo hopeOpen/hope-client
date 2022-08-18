@@ -28,18 +28,41 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { login } from '../../apis/user';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute, LocationQueryRaw } from 'vue-router';
+import { ElMessage } from 'element-plus';
+const router = useRouter();
+const route = useRoute();
 const info = reactive({
   name: '',
   password: ''
 });
-const router = useRouter();
+// 重定向地址
+console.log('route.query.path', route.query);
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const redirect: string | null = route.query.redirect;
+// 其他参数
+const otherQuery = (query: any): LocationQueryRaw => {
+  return Object.keys(query).reduce((acc: LocationQueryRaw, cur: string) => {
+    if (cur !== 'redirect') {
+      acc[cur] = query[cur];
+    }
+    return acc;
+  }, {});
+};
+otherQuery(route.query);
 const onSubmit = () => {
   login(info)
     .then((data) => {
       console.log(data);
       if (data.code === 200) {
-        router.push('/');
+        ElMessage({
+          message: '登陆成功',
+          type: 'success'
+        });
+        setTimeout(() => {
+          router.push({ path: redirect || '/', query: { ...otherQuery } });
+        }, 500);
       }
     })
     .catch((error) => {
