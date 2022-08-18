@@ -1,5 +1,6 @@
 import Axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
 import { ElMessage } from 'element-plus';
+import router from '../router';
 
 type response = AxiosResponse<any>;
 
@@ -11,9 +12,6 @@ const axiosInstance: AxiosInstance = Axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 标识产品
-    // config.headers['X-ProductName'] = 'pal';
-
     const params: any = {};
     Object.keys(config.params || {}).forEach((key: string) => {
       params[key] = encodeURIComponent(config.params[key]);
@@ -34,9 +32,18 @@ axiosInstance.interceptors.request.use(
 // 响应成功处理
 axiosInstance.interceptors.response.use((response) => {
   const { status, statusText, data: responseData } = response;
+  const { code } = responseData;
   if (status === 200) {
-    if (responseData.code !== -1) {
+    if (code === 200) {
       return Promise.resolve(responseData.data);
+    } else if (code === 401) {
+      ElMessage({
+        message: '为登陆或登陆已过期，请重新登陆',
+        type: 'error'
+      });
+      setTimeout(() => {
+        router.push('/login');
+      }, 1000);
     } else {
       ElMessage({
         message: responseData.data.message,

@@ -16,6 +16,7 @@ module.exports = {
 	rules: {
 		// 关闭严格模式
 		strict: 'off',
+		"@typescript-eslint/explicit-module-boundary-types": "off",
 		// 允许if语句中return语句之后还有else
 		'no-else-return': 'off',
 		// FIXME: 下面两个规则和prettier冲突了，暂时先关闭

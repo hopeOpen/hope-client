@@ -8,19 +8,23 @@
       @close="handleClose"
       @select="handleSelect"
     >
-      <el-menu-item index="1">
-        <el-icon><house /></el-icon>
-        <span>首页</span>
-      </el-menu-item>
-      <!-- <el-sub-menu index="1">
-        <template #title>
+      <template v-for="nav in navs">
+        <el-menu-item :index="nav.path" :key="nav.sign" v-if="!nav.subnavs">
           <el-icon><house /></el-icon>
-          <span>首页</span>
-        </template>
-        <el-menu-item-group>
-          <el-menu-item index="1-1">item one</el-menu-item>
-        </el-menu-item-group>
-      </el-sub-menu> -->
+          <span>{{ nav.name }}</span>
+        </el-menu-item>
+        <el-sub-menu v-else :key="nav.sign">
+          <template #title>
+            <el-icon><house /></el-icon>
+            <span>{{ nav.name }}</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item :index="childNav.path" v-for="childNav in nav.subnavs" :key="childNav.sign">
+              <span>{{ childNav.name }}</span>
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
+      </template>
     </el-menu>
   </aside>
 </template>
@@ -44,16 +48,16 @@ export default defineComponent({
       console.log(key, keyPath);
     };
     const handleSelect = (val: string) => {
-      console.log(val);
-      router.push('/');
+      router.push(val);
     };
     return {
+      navs: computed(() => store.state.navs),
       isCollapse,
       handleOpen,
       handleClose,
-      handleSelect,
+      handleSelect
     };
-  },
+  }
 });
 </script>
 

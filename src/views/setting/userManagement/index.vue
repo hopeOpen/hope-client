@@ -96,10 +96,6 @@ export default defineComponent({
         hopeDialogRef.value.close();
         fetchData();
       } catch (error) {
-        ElMessage({
-          message: `${error}`,
-          type: 'error'
-        });
         console.log(error);
       }
     };
@@ -114,10 +110,7 @@ export default defineComponent({
         hopeDialogRef.value.close();
         fetchData();
       } catch (error) {
-        ElMessage({
-          message: `${error}`,
-          type: 'error'
-        });
+        console.log(error);
       }
     };
 

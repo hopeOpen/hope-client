@@ -9,6 +9,7 @@ export type UserInfoType = {
 export interface State {
   isCollapse: CollapseType;
   userInfo: UserInfoType;
+  userMenus: any;
 }
 
 // 添加用户类型
