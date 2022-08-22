@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import HopeNav from '@/views/nav/index.vue';
+import HopeNav from './nav/index.vue';
 import TopMenu from '@/views/components/topMenu.vue';
 export default defineComponent({
   name: 'Layout',

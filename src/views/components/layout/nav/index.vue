@@ -3,7 +3,11 @@
     <header class="aside-header">hope</header>
     <el-menu
       class="el-menu-vertical-demo"
+      mode="vertical"
       :collapse="isCollapse"
+      :default-active="activeMenu"
+      :collapse-transition="true"
+      :unique-opened="false"
       @open="handleOpen"
       @close="handleClose"
       @select="handleSelect"
@@ -13,7 +17,7 @@
           <el-icon><house /></el-icon>
           <span>{{ nav.name }}</span>
         </el-menu-item>
-        <el-sub-menu v-else :key="nav.sign">
+        <el-sub-menu v-else :key="nav.sign" :index="nav.path">
           <template #title>
             <el-icon><house /></el-icon>
             <span>{{ nav.name }}</span>
@@ -32,29 +36,36 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 export default defineComponent({
   name: 'Nav',
   setup() {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     const isCollapse = computed(() => {
       return store.state.isCollapse;
     });
-    const handleOpen = (key: string, keyPath: string[]) => {
-      console.log(key, keyPath);
-    };
-    const handleClose = (key: string, keyPath: string[]) => {
-      console.log(key, keyPath);
-    };
+    // const handleOpen = (key: string, keyPath: string[]) => {
+    //   console.log(key, keyPath);
+    // };
+    // const handleClose = (key: string, keyPath: string[]) => {
+    //   console.log(key, keyPath);
+    // };
     const handleSelect = (val: string) => {
       router.push(val);
     };
+    const activeMenu = computed(() => {
+      const { path } = route;
+
+      return path;
+    });
     return {
       navs: computed(() => store.state.nav.navs),
+      activeMenu,
       isCollapse,
-      handleOpen,
-      handleClose,
+      // handleOpen,
+      // handleClose,
       handleSelect
     };
   }

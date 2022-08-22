@@ -9,6 +9,8 @@
     "lint": "eslint --ext .ts,.js,.vue src/"
   },
   "dependencies": {
+    "@wangeditor/editor": "^5.1.14",
+    "@wangeditor/editor-for-vue": "^5.1.12",
     "core-js": "^3.6.5",
     "element-plus": "^2.2.10",
     "vue": "^3.0.0",

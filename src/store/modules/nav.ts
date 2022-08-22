@@ -1,13 +1,14 @@
 /**
  * 菜单类
  */
-import { NavType } from '@/views/nav/navData';
-import { getUserMenus } from '@/apis/user';
+import { NavType } from '@/views/components/layout/nav/navData';
+import { getUserMenus } from '@/apis/menu';
 import { RouteRecordRaw } from 'vue-router';
 import router from '@/router';
-import manageRouters from '@/router/manage';
-import setTingRouters from '@/router/setting';
-import { navData } from '@/views/nav/navData';
+import { navData } from '@/views/components/layout/nav/navData';
+import personalSummaryRouters from '@/router/personalSummary';
+import managementRouters from '@/router/management';
+import paperRouters from '@/router/paper';
 
 interface NavState {
   navs: Array<NavType>;
@@ -56,7 +57,7 @@ const actions = {
     // 菜单权限key集合
     const menusKeys = state.userMenus.map((item: any) => item.sign);
     // 路由集合
-    let addRoutes = [...manageRouters(), ...setTingRouters()];
+    let addRoutes = [...personalSummaryRouters(), ...managementRouters(), ...paperRouters()];
     // 初始化导航菜单
     const authNavData = navData.filter((nav: NavType) => {
       if (nav.subnavs) {
