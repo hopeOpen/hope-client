@@ -1,8 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import store from '@/store';
-// import manageRouters from './manage';
-// import setTingRouters from './setting';
-// import { navData, NavType } from '@/views/nav/navData';
 
 const routes: Array<RouteRecordRaw> = [
   {

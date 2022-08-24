@@ -46,26 +46,25 @@ export default defineComponent({
     const isCollapse = computed(() => {
       return store.state.isCollapse;
     });
-    // const handleOpen = (key: string, keyPath: string[]) => {
-    //   console.log(key, keyPath);
-    // };
-    // const handleClose = (key: string, keyPath: string[]) => {
-    //   console.log(key, keyPath);
-    // };
+    const handleOpen = (key: string, keyPath: string[]) => {
+      console.log(key, keyPath);
+    };
+    const handleClose = (key: string, keyPath: string[]) => {
+      console.log(key, keyPath);
+    };
     const handleSelect = (val: string) => {
       router.push(val);
     };
     const activeMenu = computed(() => {
       const { path } = route;
-
       return path;
     });
     return {
       navs: computed(() => store.state.nav.navs),
       activeMenu,
       isCollapse,
-      // handleOpen,
-      // handleClose,
+      handleOpen,
+      handleClose,
       handleSelect
     };
   }

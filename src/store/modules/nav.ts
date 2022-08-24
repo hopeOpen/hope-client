@@ -1,11 +1,10 @@
 /**
  * 菜单类
  */
-import { NavType } from '@/views/components/layout/nav/navData';
+import { navData, NavType } from '@/views/components/layout/nav/navData';
 import { getUserMenus } from '@/apis/menu';
 import { RouteRecordRaw } from 'vue-router';
 import router from '@/router';
-import { navData } from '@/views/components/layout/nav/navData';
 import personalSummaryRouters from '@/router/personalSummary';
 import managementRouters from '@/router/management';
 import paperRouters from '@/router/paper';
@@ -14,13 +13,14 @@ interface NavState {
   navs: Array<NavType>;
   userMenus: any;
 }
-
 const state: NavState = {
   // 左侧菜单
   navs: [],
   // 用户权限菜单
   userMenus: []
 };
+
+const getters = {};
 
 const mutations = {
   changeUserMenus(state: NavState, payload = []) {
@@ -51,7 +51,7 @@ const actions = {
     store.commit('changeNavs', payload);
   },
   // 处理用户菜单
-  async handleUserMenus({ dispatch }: any) {
+  async handleUserMenus({ state, dispatch }: any) {
     // 获取用户菜单
     await dispatch('getUserMenus', {});
     // 菜单权限key集合
@@ -61,11 +61,15 @@ const actions = {
     // 初始化导航菜单
     const authNavData = navData.filter((nav: NavType) => {
       if (nav.subnavs) {
-        nav.subnavs = nav.subnavs.filter((sub: NavType) => menusKeys.includes(sub.sign));
+        let defaultSubnav = [...nav.subnavs];
+        defaultSubnav = defaultSubnav.filter((sub: NavType) => menusKeys.includes(sub.sign));
+        if (defaultSubnav.length) {
+          nav.subnavs = defaultSubnav;
+        }
       }
       return menusKeys.includes(nav.sign);
     });
-    dispatch('changeNavsActions', authNavData);
+    await dispatch('changeNavsActions', authNavData);
     // 筛选出有权限的路由
     addRoutes = addRoutes.filter((routeItem: RouteRecordRaw) => {
       if (routeItem.children) {
@@ -85,6 +89,7 @@ const actions = {
 export default {
   namespace: true,
   state,
+  getters,
   mutations,
   actions
 };
