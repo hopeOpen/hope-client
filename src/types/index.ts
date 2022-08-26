@@ -46,3 +46,12 @@ export interface UpdateUserInfoType {
 export interface DeleteUserIdsType {
   ids: number[] | string[];
 }
+
+// 分类信息类型
+export interface CategoryType {
+  categoryLevel: number;
+  categoryName: string;
+  id: number | string;
+  parentId: number | string;
+  children?: CategoryType[];
+}

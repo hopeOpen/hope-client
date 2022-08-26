@@ -32,7 +32,7 @@ axiosInstance.interceptors.request.use(
 // 响应成功处理
 axiosInstance.interceptors.response.use((response) => {
   const { status, statusText, data: responseData } = response;
-  const { code } = responseData;
+  const { code, message } = responseData;
   if (status === 200) {
     if (code === 200) {
       return Promise.resolve(responseData.data);
@@ -45,11 +45,12 @@ axiosInstance.interceptors.response.use((response) => {
         router.push('/login');
       }, 1000);
     } else {
+      const errorMessage = code === 500 ? message : responseData.data.message;
       ElMessage({
-        message: responseData.data.message,
+        message: errorMessage,
         type: 'error'
       });
-      return Promise.reject(responseData.data.message || '未知错误');
+      return Promise.reject(errorMessage || '未知错误');
     }
   } else {
     return Promise.reject(new Error(statusText));

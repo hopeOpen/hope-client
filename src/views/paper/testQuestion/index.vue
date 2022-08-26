@@ -1,80 +1,47 @@
 <template>
-  <div class="question-wrapper">
-    <!-- 题干 -->
-    <topic v-model:html="data.topic" />
-    <!-- 选项/答案 -->
-    <options-com ref="optionsComRef" @change="onChange" />
-    <!-- 解析 -->
-    <parsing v-model:html="data.parsing" />
-    <p class="btns">
-      <el-button @click="reset">重置</el-button>
-      <el-button type="primary" @click="submit">提交</el-button>
-    </p>
+  <div class="que-wrapper">
+    <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="changeActiveTab">
+      <el-tab-pane :label="tab.label" :name="tab.key" v-for="tab in tabLIst" :key="tab.id">
+        <component :is="tab.component" v-if="activeTab === tab.key" />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
-import Topic from '@/views/paper/testQuestion/components/topicDes.vue';
-import Parsing from '@/views/paper/testQuestion/components/parsing.vue';
-import OptionsCom from '@/views/paper/testQuestion/components/optionsCom.vue';
-import { addQuestion } from '@/apis/testQuestion';
-
-const data = reactive({
-  // 题目类型 0当选
-  type: 0,
-  // 题目
-  topic: '',
-  // 正确答案
-  correctOption: '',
-  // 选项
-  options: [],
-  // 解析
-  parsing: ''
-});
-const onChange = (value: any, radio: string) => {
-  data.options = value;
-  data.correctOption = radio;
-};
-// 重置
-const reset = () => {
-  Object.assign(data, {
-    // 题目
-    topic: '',
-    // 正确答案
-    correctOption: '',
-    // 选项
-    options: [],
-    // 解析
-    parsing: ''
-  });
-};
-// 提交
-const optionsComRef = ref();
-console.log(optionsComRef);
-const submit = () => {
-  console.log(optionsComRef);
-  const verify = optionsComRef.value.checkParams();
-  if (verify && data.topic.trim()) {
-    addQuestion(data)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+import { ref } from 'vue';
+import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
+import addQuestion from './add/index.vue';
+const activeTab = ref<string | LocationQueryValue[]>('');
+const router = useRouter();
+const route = useRoute();
+const tabLIst = [
+  {
+    label: '新增题目',
+    key: 'addQuestion',
+    id: 1,
+    component: addQuestion
+  },
+  {
+    label: '新增题目1',
+    key: 'addQuestion1',
+    id: 2,
+    component: addQuestion
+  }
+];
+console.log(route.query.query);
+activeTab.value = route.query.type || 'addQuestion';
+const changeActiveTab = () => {
+  if (activeTab.value === 'addQuestion') {
+    router.push({ path: '/paper/testQuestion?type=addQuestion' });
+  } else if (activeTab.value === 'addQuestion1') {
+    router.push({ path: '/paper/testQuestion?type=addQuestion1' });
   }
 };
 </script>
 <style lang="scss">
-.question-wrapper {
+.que-wrapper {
   padding: 20px;
   box-sizing: border-box;
   background-color: white;
-  .btns {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
 }
 </style>
