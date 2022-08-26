@@ -10,3 +10,30 @@
     margin-right: 10px
   }
 }
+
+.reset-el-dialog {
+  .el-dialog__header {
+    padding: 12px 24px;
+    padding-right: 16px;
+    border-bottom: 1px solid #ebebeb;
+
+    .el-dialog__title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .el-dialog__headerbtn {
+      top: 0
+    }
+  }
+
+  .el-dialog__body {
+    padding: 20px 24px;
+    border-bottom: 1px solid #ebebeb;
+  }
+
+  .el-dialog__footer {
+    padding: 16px 24px;
+  }
+}

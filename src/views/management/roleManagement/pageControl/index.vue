@@ -1,7 +1,5 @@
 <template>
-  <div class="page-wrapper">
-    <h1>页面</h1>
-  </div>
+  <div class="page-wrapper"></div>
 </template>
 <script setup lang="ts"></script>
 <style lang="scss">

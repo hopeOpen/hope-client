@@ -2,3 +2,16 @@
 $top-menu-height: 50px;
 // 公共间隔
 $common-padding: 20px;
+
+// 单行文本截取
+// @include singleline-ellipsis()
+@mixin singleline-ellipsis() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// transition
+@mixin default-transition($prop) {
+  transition: $prop 0.3s ease-out;
+}

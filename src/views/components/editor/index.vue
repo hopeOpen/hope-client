@@ -1,0 +1,109 @@
+<template>
+  <div class="editor-wrapper" @click="handleShowEditor" :class="showEditor && 'focus-style'">
+    <p v-if="showTips" class="plo">{{ props.placeholder }}</p>
+    <template v-if="showEditor">
+      <Toolbar class="toolbar" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
+      <Editor
+        class="editor"
+        style="height: 58px; overflow-y: hidden"
+        v-model="valueHtml"
+        :defaultConfig="editorConfig"
+        :mode="mode"
+        @onCreated="handleCreated"
+        @onBlur="handleBlur"
+      />
+    </template>
+    <p class="content" v-show="showContent" v-html="valueHtml"></p>
+  </div>
+</template>
+<script setup lang="ts">
+import '@wangeditor/editor/dist/css/style.css'; // 引入 css
+import { ref, shallowRef, onBeforeUnmount, computed, defineEmits, defineProps } from 'vue';
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
+const emit = defineEmits(['update:html']);
+const props = defineProps({
+  placeholder: {
+    type: String,
+    default: ''
+  },
+  currentIndex: {
+    type: Number,
+    default: 0
+  }
+});
+const showEditor = ref(false);
+const editorRef = shallowRef();
+const valueHtml = ref('');
+const toolbarConfig = {
+  excludeKeys: []
+};
+const editorConfig = { placeholder: '请输入内容...' };
+const mode = 'simple';
+
+// 组件销毁时，也及时销毁编辑器
+onBeforeUnmount(() => {
+  const editor = editorRef.value;
+  // eslint-disable-next-line no-eq-null
+  if (editor == null) return;
+  editor.destroy();
+});
+const handleCreated = (editor: any) => {
+  editorRef.value = editor; // 记录 editor 实例，重要！
+};
+const handleBlur = () => {
+  if (valueHtml.value === '<p><br></p>') {
+    valueHtml.value = '';
+  }
+  showEditor.value = false;
+  emit('update:html', valueHtml.value, props.currentIndex);
+};
+const handleShowEditor = () => {
+  showEditor.value = true;
+};
+
+// 是否显示内容
+const showContent = computed((): boolean | string => {
+  return !showEditor.value && valueHtml.value;
+});
+// 是否显示提示
+const showTips = computed((): boolean | string => {
+  return !showContent.value && !showEditor.value;
+});
+</script>
+<style lang="scss">
+.editor-wrapper {
+  flex: 1;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  &:hover {
+    border: 1px solid #1a8cfe;
+  }
+  &.focus-style {
+    &:hover {
+      border: 1px solid transparent;
+      box-shadow: 0px 0px 23px -12px rgba(142, 151, 242, 0.76);
+    }
+  }
+  .plo {
+    margin-left: 10px;
+    color: #ccc;
+  }
+  .content {
+    margin-left: 10px;
+  }
+  .toolbar {
+    width: calc(100% + 2px);
+    border: 1px solid #ccc;
+  }
+  .editor {
+    width: calc(100% + 2px);
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+  // wangeditor覆盖样式
+  ol,
+  ul {
+    margin-left: -10px;
+  }
+}
+</style>
