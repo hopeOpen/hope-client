@@ -6,14 +6,14 @@
       <Editor
         class="editor"
         style="height: 58px; overflow-y: hidden"
-        v-model="valueHtml"
+        v-model="htmlValue"
         :defaultConfig="editorConfig"
         :mode="mode"
         @onCreated="handleCreated"
         @onBlur="handleBlur"
       />
     </template>
-    <p class="content" v-show="showContent" v-html="valueHtml"></p>
+    <p class="content" v-show="showContent" v-html="htmlValue"></p>
   </div>
 </template>
 <script setup lang="ts">
@@ -22,6 +22,10 @@ import { ref, shallowRef, onBeforeUnmount, computed, defineEmits, defineProps } 
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
 const emit = defineEmits(['update:html']);
 const props = defineProps({
+  html: {
+    type: String,
+    default: ''
+  },
   placeholder: {
     type: String,
     default: ''
@@ -33,7 +37,6 @@ const props = defineProps({
 });
 const showEditor = ref(false);
 const editorRef = shallowRef();
-const valueHtml = ref('');
 const toolbarConfig = {
   excludeKeys: []
 };
@@ -51,11 +54,11 @@ const handleCreated = (editor: any) => {
   editorRef.value = editor; // 记录 editor 实例，重要！
 };
 const handleBlur = () => {
-  if (valueHtml.value === '<p><br></p>') {
-    valueHtml.value = '';
+  if (htmlValue.value === '<p><br></p>') {
+    emit('update:html', '');
   }
   showEditor.value = false;
-  emit('update:html', valueHtml.value, props.currentIndex);
+  emit('update:html', htmlValue.value, props.currentIndex);
 };
 const handleShowEditor = () => {
   showEditor.value = true;
@@ -63,11 +66,20 @@ const handleShowEditor = () => {
 
 // 是否显示内容
 const showContent = computed((): boolean | string => {
-  return !showEditor.value && valueHtml.value;
+  return !showEditor.value && htmlValue.value;
 });
 // 是否显示提示
 const showTips = computed((): boolean | string => {
   return !showContent.value && !showEditor.value;
+});
+
+const htmlValue = computed({
+  get() {
+    return props.html;
+  },
+  set(val) {
+    emit('update:html', val);
+  }
 });
 </script>
 <style lang="scss">

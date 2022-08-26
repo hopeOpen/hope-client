@@ -10,29 +10,29 @@ import {
 
 // 获取用户列表
 export const getUsers = async (params: UsersParamsType): Promise<any> => {
-  return $post('/user/list', params);
+  return await $post('/user/list', params);
 };
 
 // 添加用户
 export const addUser = async (params: AddUserInfoType): Promise<any> => {
-  return $post('/user/add-users', params);
+  return await $post('/user/add-users', params);
 };
 
 // 获取详情
 export const getUserDetail = async (params: UserDetailParamsType): Promise<any> => {
-  return $post('/user/detail', params);
+  return await $post('/user/detail', params);
 };
 
 // 更新用户信息
 export const updateUserInfo = async (params: UpdateUserInfoType): Promise<any> => {
-  return $post('/user/update', params);
+  return await $post('/user/update', params);
 };
 
 // 删除用户
 export const deleteUser = async (params: DeleteUserIdsType): Promise<any> => {
-  return $post('/user/delete', params);
+  return await $post('/user/delete', params);
 };
 
 export const login = async (params: any): Promise<any> => {
-  return $post('/user/login', params);
+  return await $post('/user/login', params);
 };

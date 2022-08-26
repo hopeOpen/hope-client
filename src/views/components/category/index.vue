@@ -3,7 +3,7 @@
     <header class="category-header">
       <el-autocomplete
         clearable
-        ref="autocomplete"
+        ref="autocompleteRef"
         v-model="content"
         size="medium"
         suffix-icon="el-icon-search"
@@ -36,10 +36,10 @@
       <el-tree
         highlight-current
         class="tree"
-        ref="tree"
+        ref="treeRef"
         node-key="id"
         :indent="12"
-        :data="category"
+        :data="props.category"
         :default-expanded-keys="defaultExpandedKeys"
         :current-node-key="currentNodeKey"
         :props="defaultProps"
@@ -81,7 +81,7 @@
     </main>
     <!-- 弹窗(新建分类 重命名) -->
     <category-dialog
-      ref="dialog"
+      ref="categoryDialogRef"
       v-model="dialogVisible"
       :loading="dialogLoading"
       :show-continue-button="dialogShowContinueButton"
@@ -90,25 +90,55 @@
       @confirm="handleDialogConfirm"
       @continue="handleDialogContinue"
     />
+    <confirm-dialog ref="confirmDialogRef">
+      <div class="title">
+        <i class="el-icon-warning" />
+        <span class="text">
+          {{ `确定删除分类"${dialogNode.categoryName}"吗?` }}
+        </span>
+      </div>
+      <span class="description">删除后不可恢复</span>
+    </confirm-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, defineProps, defineEmits } from 'vue';
 import CategoryDialog from './categoryDialog.vue';
+import ConfirmDialog from '@/views/components/confirmDialog.vue';
+import { addCategory, updateCategory, deleteCategory, searchCategory } from '@/apis/category';
+import { ElMessage } from 'element-plus';
+const emit = defineEmits(['fetch']);
+const confirmDialogRef = ref();
 // 搜索相关
 const content = ref('');
-const querySearchAsync = (content: string, cb: any) => {
-  console.log(content, cb);
-  cb([]);
+// 模糊搜索
+const querySearchAsync = async (content: string, cb: any) => {
+  if (content.trim() === '') {
+    return cb([]);
+  }
+  const list =
+    (await searchCategory({
+      categoryName: content.trim()
+    })) || [];
+  list.forEach((item: any) => {
+    item.value = item.categoryName;
+  });
+  cb(list);
 };
+const treeRef = ref();
+// 展开的节点keys
+let defaultExpandedKeys = reactive([] as any[]);
 const handleSelect = (node: any) => {
-  console.log('handleSelect', node);
+  const set = new Set(defaultExpandedKeys);
+  set.add(node.id);
+  defaultExpandedKeys = Array.from(set);
+  treeRef.value.setCurrentKey(node.id);
 };
+const autocompleteRef = ref();
 const handleClear = () => {
-  console.log('');
+  autocompleteRef.value.activated = true;
 };
-
 // 全部分类
 const defaultNode = {
   name: '全部分类',
@@ -116,108 +146,27 @@ const defaultNode = {
   categoryLevel: 0
 };
 const currentNodeKey = ref('');
-const dialogNode = ref({});
+const dialogNode: any = ref({});
 const handleNodeClick = (node: any) => {
   currentNodeKey.value = node;
 };
 const dialogVisible = ref(false);
 const handleAdd = (node: any) => {
   dialogNode.value = node;
+  dialogNode.value.type = 'add';
   dialogVisible.value = true;
 };
 
-//
-const category = ref([
-  {
-    id: 4,
-    categoryName: '信用卡年费调整',
-    parentId: 0,
-    categoryLevel: 1,
-    ruleType: 5,
-    description: null,
-    children: [
-      {
-        id: 17,
-        categoryName: '信用卡预留手机号码修改',
-        parentId: 0,
-        categoryLevel: 1,
-        ruleType: 5,
-        description: null,
-        children: []
-      }
-    ]
-  },
-  {
-    id: 7,
-    categoryName: '信用卡预留手机号码修改',
-    parentId: 0,
-    categoryLevel: 1,
-    ruleType: 5,
-    description: null,
-    children: []
-  },
-  {
-    id: 9,
-    categoryName: '信用卡挂失换卡',
-    parentId: 0,
-    categoryLevel: 1,
-    ruleType: 5,
-    description: null,
-    children: []
-  },
-  {
-    id: 27,
-    categoryName: '自助设备吞卡折',
-    parentId: 0,
-    categoryLevel: 1,
-    ruleType: 5,
-    description: null,
-    children: []
-  },
-  {
-    id: 74,
-    categoryName: '信用卡盗刷',
-    parentId: 0,
-    categoryLevel: 1,
-    ruleType: 5,
-    description: null,
-    children: []
-  },
-  {
-    id: 75,
-    categoryName: '信用卡账单地址修改',
-    parentId: 0,
-    categoryLevel: 1,
-    ruleType: 5,
-    description: null,
-    children: []
-  },
-  {
-    id: 76,
-    categoryName: '信用卡积分抵扣费用',
-    parentId: 0,
-    categoryLevel: 1,
-    ruleType: 5,
-    description: null,
-    children: []
-  },
-  {
-    id: 108,
-    categoryName: 'ceshi',
-    parentId: 0,
-    categoryLevel: 1,
-    ruleType: 5,
-    description: null,
-    children: []
+const props = defineProps({
+  category: {
+    type: Object
   }
-]);
-// 展开的节点keys
-const defaultExpandedKeys = reactive([] as any[]);
+});
 // 分类树字段
-const defaultProps = ref({
+const defaultProps = {
   children: 'children',
   label: 'categoryName'
-});
+};
 // 在节点展开是添加到默认展开数组
 const nodeExpand = (data: any) => {
   defaultExpandedKeys.push(data.id);
@@ -257,11 +206,31 @@ const handlePopeverHide = () => {
 const getPopoverStyle = (id: string | number) => {
   return currentHoverNode.value === id || currentPopNode.value === id ? 'transform: scale(1);' : '';
 };
+const categoryDialogRef = ref();
+// 重命名
 const handleRename = (data: any) => {
   console.log(data);
+  dialogNode.value = data;
+  dialogNode.value.type = 'edit';
+  dialogVisible.value = true;
+  dialogTitle.value = '重命名';
+  categoryDialogRef.value.setContent(data.categoryName);
+  dialogShowContinueButton.value = false;
 };
-const handleDelete = (data: any) => {
-  console.log(data);
+const handleDelete = async (data: any) => {
+  dialogNode.value = data;
+  await confirmDialogRef.value.message();
+  deleteCategory({ id: data.id })
+    .then(() => {
+      ElMessage({
+        type: 'success',
+        message: '删除分类成功'
+      });
+      emit('fetch');
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 const handleDialogCancel = () => {
@@ -270,10 +239,46 @@ const handleDialogCancel = () => {
   dialogVisible.value = false;
   dialogShowContinueButton.value = false;
 };
-const handleDialogConfirm = (content: any, notClose = false) => {
-  console.log(content, notClose);
+
+// 新增或编辑
+const handleDialogConfirm = async (content: any, notClose = false) => {
+  try {
+    dialogLoading.value = true;
+    const { id, categoryLevel, parentId, type } = dialogNode.value;
+    if (type === 'add') {
+      await addCategory({
+        categoryName: content,
+        categoryLevel: categoryLevel + 1,
+        parentId: id
+      });
+      ElMessage({
+        type: 'success',
+        message: '新增分类成功'
+      });
+    } else {
+      await updateCategory({
+        categoryName: content,
+        categoryLevel,
+        parentId,
+        id
+      });
+      ElMessage({
+        type: 'success',
+        message: '编辑分类成功'
+      });
+    }
+    if (!notClose) {
+      dialogVisible.value = false;
+    }
+    emit('fetch');
+  } catch (error) {
+    console.log(error);
+  } finally {
+    dialogLoading.value = false;
+  }
 };
-const handleDialogContinue = async () => {
+// 保存并新建下一个
+const handleDialogContinue = async (content: string) => {
   try {
     await handleDialogConfirm(content, true);
   } catch (error) {

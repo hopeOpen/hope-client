@@ -36,7 +36,7 @@
   </el-dialog>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, computed } from 'vue';
+import { defineProps, defineEmits, ref, computed, defineExpose } from 'vue';
 const emit = defineEmits(['confirm', 'cancel', 'continue', 'visibleChange']);
 const props = defineProps({
   title: {
@@ -81,8 +81,14 @@ const handleClose = () => {
   emit('visibleChange', false);
   init();
 };
+const setContent = (name: string) => {
+  content.value = name;
+};
 const disabled = computed(() => {
   return content.value.trim().length <= 0;
+});
+defineExpose({
+  setContent
 });
 </script>
 <style lang="scss">
