@@ -50,7 +50,7 @@ const data = reactive({
   // 选项
   options: [],
   // 解析
-  parsing: ''
+  parsing: '解析'
 });
 
 const onChange = (value: any, radio: string) => {
@@ -58,6 +58,7 @@ const onChange = (value: any, radio: string) => {
   data.correctOption = radio;
 };
 // 重置
+const optionsComRef = ref();
 const reset = () => {
   Object.assign(data, {
     topic: '',
@@ -66,15 +67,13 @@ const reset = () => {
     parsing: ''
   });
   Object.assign(typesParams.value, {
-    // 试题分类
     categoryType: '',
-    // 题目类型
     topicType: 0,
     level: 0
   });
+  optionsComRef.value.reset();
 };
 // 提交
-const optionsComRef = ref();
 const submit = async () => {
   const verify = optionsComRef.value.checkParams();
   if (verify && data.topic.trim()) {

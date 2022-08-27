@@ -109,8 +109,14 @@ const checkParams = () => {
   return true;
 };
 
+const reset = () => {
+  answerData.length = 0;
+  // answerData.push(new Array(4))
+};
+
 defineExpose({
-  checkParams
+  checkParams,
+  reset
 });
 </script>
 
