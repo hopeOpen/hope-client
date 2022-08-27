@@ -1,17 +1,27 @@
 <template>
   <div class="parsing-wrapper">
     <span class="component-label">解析</span>
-    <h-editor class="h-editor" placeholder="题目解析，点此编辑（必填）" v-model:html="html" />
+    <h-editor class="h-editor" placeholder="题目解析，点此编辑（必填）" v-model:html="htmlValue" />
   </div>
 </template>
 <script setup lang="ts">
-import { defineEmits, ref, watch } from 'vue';
+import { defineEmits, defineProps, computed } from 'vue';
 import HEditor from '@/views/components/editor/index.vue';
-const html = ref('');
+const props = defineProps({
+  html: {
+    type: String,
+    default: ''
+  }
+});
 const emit = defineEmits(['update:html']);
 
-watch(html, (value: string) => {
-  emit('update:html', value);
+const htmlValue = computed({
+  get() {
+    return props.html;
+  },
+  set(val: string) {
+    emit('update:html', val);
+  }
 });
 </script>
 <style lang="scss">
