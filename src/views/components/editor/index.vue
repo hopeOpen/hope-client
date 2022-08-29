@@ -38,7 +38,69 @@ const props = defineProps({
 const showEditor = ref(false);
 const editorRef = shallowRef();
 const toolbarConfig = {
-  excludeKeys: []
+  excludeKeys: [],
+  toolbarKeys: [
+    {
+      key: 'group-header',
+      title: 'H',
+      menuKeys: ['header1', 'header2', 'header3', 'header4', 'header5']
+    },
+    'bold',
+    'clearStyle',
+    'lineHeight',
+    'divider',
+    'emotion',
+    'blockquote',
+    'headerSelect',
+    'todo',
+    {
+      key: 'group-code',
+      title: 'code',
+      menuKeys: ['code', 'codeBlock']
+    },
+    {
+      key: 'group-indent',
+      title: '缩进',
+      menuKeys: ['indent', 'delIndent']
+    },
+    {
+      key: 'group-list',
+      title: 'list',
+      menuKeys: ['bulletedList', 'numberedList']
+    },
+    {
+      key: 'group-font',
+      title: 'font',
+      menuKeys: ['underline', 'italic', 'through', 'color', 'bgColor', 'fontSize', 'sub', 'sup']
+    },
+    {
+      key: 'group-link',
+      title: 'link',
+      menuKeys: ['insertLink', 'viewLink', 'editLink', 'unLink']
+    },
+    {
+      key: 'group-justify',
+      title: 'justify',
+      menuKeys: ['justifyLeft', 'justifyRight', 'justifyCenter', 'justifyJustify']
+    },
+    {
+      key: 'group-table',
+      title: 'table',
+      menuKeys: [
+        'insertTable',
+        'deleteTable',
+        'insertTableRow',
+        'deleteTableRow',
+        'insertTableCol',
+        'deleteTableCol',
+        'tableHeader',
+        'tableFullWidth'
+      ]
+    },
+    'fullScreen',
+    'redo',
+    'undo'
+  ]
 };
 const editorConfig = { placeholder: '请输入内容...' };
 const mode = 'simple';
