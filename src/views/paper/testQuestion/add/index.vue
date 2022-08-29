@@ -4,8 +4,8 @@
     <type-selection ref="typeSelectRef" v-model:typeParams="typesParams" />
     <!-- 题干 -->
     <topic v-model:html.sync="data.topic" />
-    <!-- 选项/答案 -->
-    <options-com ref="optionsComRef" @change="onChange" />
+    <!-- 单选 -->
+    <single-option ref="singleOptionRef" v-model:options="data.options" v-model:correctOption="data.correctOption" />
     <!-- 解析 -->
     <parsing v-model:html="data.parsing" />
     <p class="btns">
@@ -15,13 +15,41 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import Topic from '@/views/paper/testQuestion/components/topicDes.vue';
 import Parsing from '@/views/paper/testQuestion/components/parsing.vue';
-import OptionsCom from '@/views/paper/testQuestion/components/optionsCom.vue';
+import SingleOption from '@/views/paper/testQuestion/components/singleOption.vue';
 import TypeSelection from '@/views/paper/testQuestion/components/typeSelection.vue';
 import { addQuestion } from '@/apis/testQuestion';
 import { ElMessage } from 'element-plus';
+
+const defaultData = {
+  // 题目
+  topic: 'js good',
+  // 正确答案
+  correctOption: 'A',
+  // 选项
+  options: [
+    {
+      label: 'A',
+      answer: '1'
+    },
+    {
+      label: 'B',
+      answer: '2'
+    },
+    {
+      label: 'C',
+      answer: '3'
+    },
+    {
+      label: 'D',
+      answer: '4'
+    }
+  ],
+  // 解析
+  parsing: '解析'
+};
 
 const typesParams = ref({
   // 试题分类
@@ -42,23 +70,14 @@ watch(
   }
 );
 
-const data = reactive({
-  // 题目
-  topic: 'js good',
-  // 正确答案
-  correctOption: '',
-  // 选项
-  options: [],
-  // 解析
-  parsing: '解析'
-});
+const data = ref(JSON.parse(JSON.stringify(defaultData)));
 
-const onChange = (value: any, radio: string) => {
-  data.options = value;
-  data.correctOption = radio;
-};
+// const onChange = (value: any, radio: string) => {
+//   data.options = value;
+//   data.correctOption = radio;
+// };
 // 重置
-const optionsComRef = ref();
+const singleOptionRef = ref();
 const reset = () => {
   Object.assign(data, {
     topic: '',
@@ -71,13 +90,13 @@ const reset = () => {
     topicType: 0,
     level: 0
   });
-  optionsComRef.value.reset();
+  data.value = JSON.parse(JSON.stringify(defaultData));
 };
 // 提交
 const submit = async () => {
-  const verify = optionsComRef.value.checkParams();
-  if (verify && data.topic.trim()) {
-    const params = Object.assign({}, typesParams.value, data);
+  const verify = singleOptionRef.value.checkParams();
+  if (verify && data.value.topic.trim()) {
+    const params = Object.assign({}, typesParams.value, data.value);
     try {
       await addQuestion(params);
       // 重置题目
