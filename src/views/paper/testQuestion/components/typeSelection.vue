@@ -21,7 +21,7 @@
         题目难度
         <i class="require">*</i>
       </span>
-      <el-select size="small" class="topic-select" v-model="typeParamsValue.level" placeholder="选择分类">
+      <el-select size="small" class="topic-select" v-model="typeParamsValue.level" placeholder="题目难度">
         <el-option v-for="item in topicLevels" :key="item.level" :label="item.label" :value="item.level" />
       </el-select>
     </p>

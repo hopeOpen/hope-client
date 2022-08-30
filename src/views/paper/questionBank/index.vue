@@ -1,26 +1,116 @@
 <template>
   <div class="qu-wrapper">
-    <category :category="categoryData" @fetch="fetchCategory" />
+    <category :category="categoryData" @fetch="fetchCategory" v-model:categoryId="query.categoryId" />
     <main class="qu-main e-container">
-      <header>.....</header>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="id" label="id" width="180" />
-        <el-table-column prop="name" label="Name" width="180" />
-        <el-table-column prop="address" label="Address" />
-      </el-table>
+      <!-- 筛选项 -->
+      <header class="qu-header">
+        <!-- 题目类型 -->
+        <el-select v-model="query.topicType" placeholder="题目类型" clearable @change="fetchData">
+          <el-option v-for="item in topicTypes" :key="item.key" :label="item.label" :value="item.key" />
+        </el-select>
+        <!-- 题目难度 -->
+        <el-select v-model="query.level" placeholder="题目难度" clearable @change="fetchData">
+          <el-option v-for="item in topicLevels" :key="item.level" :label="item.label" :value="item.level" />
+        </el-select>
+      </header>
+      <!-- 表格 -->
+      <topic-table :tableConfig="tableConfig" :tableData="tableData" :colConfig="colConfig">
+        <!-- 展开的数据 -->
+        <template v-slot:expand>
+          <el-table-column type="expand">
+            <template #default="scope">
+              <div v-html="scope.row.topic"></div>
+            </template>
+          </el-table-column>
+        </template>
+        <!-- 题目 -->
+        <template v-slot:topic>
+          <el-table-column label="题目">
+            <template #default="scope">
+              <div>{{ getContent(scope.row.topic) }}</div>
+            </template>
+          </el-table-column>
+        </template>
+        <!-- 分类 -->
+        <template v-slot:categoryId>
+          <el-table-column label="所属分类">
+            <template #default="scope">
+              <div>{{ getCategoryLabel(scope.row) }}</div>
+            </template>
+          </el-table-column>
+        </template>
+        <!-- 所属类型 -->
+        <template v-slot:topicType>
+          <el-table-column label="所属类型">
+            <template #default="scope">
+              <div>{{ getTopicTypeLabel(scope.row.topicType) }}</div>
+            </template>
+          </el-table-column>
+        </template>
+        <!-- 难度 -->
+        <template v-slot:level>
+          <el-table-column label="所属类型">
+            <template #default="scope">
+              <span class="label-tip" :class="labelStyle(scope.row.level)">{{ getLabelLabel(scope.row.level) }}</span>
+            </template>
+          </el-table-column>
+        </template>
+      </topic-table>
     </main>
   </div>
 </template>
 <script setup lang="ts">
 import Category from '@/views/components/category/index.vue';
 import { categoryList } from '@/apis/category';
-import { reactive } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { CategoryType } from '@/types/index';
-const tableData: any = [];
+import { topicTypes, topicLevels, LEVEL_TYPES } from '@/constans';
+import { getQuestionList } from '@/apis/testQuestion';
+import TopicTable from './components/table.vue';
+
+const query = ref({
+  // 分类id
+  categoryId: '',
+  // 难易程度
+  level: '',
+  // 题目类型
+  topicType: '',
+  // 题目名称
+  topic: '',
+  pageSize: 10,
+  pageNum: 1
+});
+
+console.log(query);
+
+const tableData: any = ref([]);
+const tableConfig = {
+  width: '100%',
+  headerCellStyle: {
+    background: '#f4f4f4'
+  }
+};
+const colConfig = [
+  {
+    slot: 'expand'
+  },
+  {
+    slot: 'topic'
+  },
+  {
+    slot: 'categoryId'
+  },
+  {
+    slot: 'topicType'
+  },
+  {
+    slot: 'level'
+  }
+];
 
 // 获取分类列表
 const categoryData: CategoryType[] = reactive([]);
-
+const categoryMap = new Map();
 const fetchCategory = () => {
   categoryList().then((res) => {
     categoryData.length = 0;
@@ -28,12 +118,91 @@ const fetchCategory = () => {
   });
 };
 fetchCategory();
+watch(categoryData, () => {
+  // 清楚old数据
+  categoryMap.clear();
+  treeToFlat(categoryData);
+});
+const treeToFlat = (arr: CategoryType[]) => {
+  arr.forEach((item: CategoryType) => {
+    if (!categoryMap.has(item.id)) {
+      categoryMap.set(item.id, item);
+      treeToFlat(item.children || []);
+    }
+  });
+};
+
+// 获取题目列表
+const fetchData = async () => {
+  try {
+    const result = await getQuestionList(query.value);
+    tableData.value = result.list || [];
+  } catch (error) {
+    console.log(error);
+  }
+};
+fetchData();
+
+// 获取题目名称
+const getContent = (content: string) => {
+  return content.replace(/<[^<>]+>/g, '');
+};
+// 获取分类名称
+const getCategoryLabel = (data: any) => {
+  if (!data.categoryType) return '-';
+  return categoryMap.get(data.categoryType).categoryName;
+};
+// 获取题目所属类型
+const getTopicTypeLabel = (type: string | number) => {
+  const result = topicTypes.find((item) => item.key === type);
+  return result ? result.label : '-';
+};
+// 获取题目难易程度
+const getLabelLabel = (type: string | number) => {
+  const result = topicLevels.find((item) => item.level === type);
+  return result ? result.label : '-';
+};
+// 获取样式
+const labelStyle = (type: string | number) => {
+  const { EASY, MEDIUM, HARD } = LEVEL_TYPES;
+  switch (type) {
+    case EASY:
+      return 'is-easy';
+    case MEDIUM:
+      return 'is-medium';
+    case HARD:
+      return 'is-hard';
+    default:
+      return '';
+  }
+};
 </script>
 <style lang="scss">
 .qu-wrapper {
   display: flex;
   .qu-main {
     margin-left: 20px;
+    .qu-header {
+      .el-select {
+        width: 100px;
+        margin-right: 20px;
+      }
+    }
+    .label-tip {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background-color: red;
+      color: white;
+      &.is-easy {
+        background-color: $color-success;
+      }
+      &.is-medium {
+        background-color: $color-warn;
+      }
+      &.is-hard {
+        background-color: $color-danger;
+      }
+    }
   }
 }
 </style>

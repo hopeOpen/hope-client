@@ -103,12 +103,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, defineProps, defineEmits } from 'vue';
+import { ref, reactive, defineProps, defineEmits, watch } from 'vue';
 import CategoryDialog from './categoryDialog.vue';
 import ConfirmDialog from '@/views/components/confirmDialog.vue';
 import { addCategory, updateCategory, deleteCategory, searchCategory } from '@/apis/category';
 import { ElMessage } from 'element-plus';
-const emit = defineEmits(['fetch']);
+const emit = defineEmits(['fetch', 'update:categoryId']);
 const confirmDialogRef = ref();
 // 搜索相关
 const content = ref('');
@@ -134,6 +134,7 @@ const handleSelect = (node: any) => {
   set.add(node.id);
   defaultExpandedKeys = Array.from(set);
   treeRef.value.setCurrentKey(node.id);
+  emit('update:categoryId', node.id);
 };
 const autocompleteRef = ref();
 const handleClear = () => {
@@ -145,7 +146,7 @@ const defaultNode = {
   id: '',
   categoryLevel: 0
 };
-const currentNodeKey = ref('');
+const currentNodeKey = ref();
 const dialogNode: any = ref({});
 const handleNodeClick = (node: any) => {
   currentNodeKey.value = node;
@@ -160,8 +161,21 @@ const handleAdd = (node: any) => {
 const props = defineProps({
   category: {
     type: Object
+  },
+  categoryId: {
+    type: String,
+    default: ''
   }
 });
+
+watch(
+  currentNodeKey,
+  (val) => {
+    emit('update:categoryId', val.id);
+  },
+  { deep: true }
+);
+
 // 分类树字段
 const defaultProps = {
   children: 'children',
