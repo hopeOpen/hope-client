@@ -29,17 +29,24 @@ export const topicTypes = [
 ];
 
 // 题目难度
+export const LEVEL_TYPES = {
+  EASY: 0,
+  MEDIUM: 1,
+  HARD: 2
+};
+
+// 题目难度
 export const topicLevels = [
   {
     label: '简单',
-    level: 0
+    level: LEVEL_TYPES.EASY
   },
   {
     label: '中等',
-    level: 1
+    level: LEVEL_TYPES.MEDIUM
   },
   {
     label: '困难',
-    level: 2
+    level: LEVEL_TYPES.HARD
   }
 ];
