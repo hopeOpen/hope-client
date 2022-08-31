@@ -5,27 +5,35 @@
       <!-- 筛选项 -->
       <header class="qu-header">
         <!-- 题目类型 -->
-        <el-select v-model="query.topicType" placeholder="题目类型" clearable @change="fetchData">
+        <el-select v-model="query.topicType" placeholder="题目类型" clearable>
           <el-option v-for="item in topicTypes" :key="item.key" :label="item.label" :value="item.key" />
         </el-select>
         <!-- 题目难度 -->
-        <el-select v-model="query.level" placeholder="题目难度" clearable @change="fetchData">
+        <el-select v-model="query.level" placeholder="题目难度" clearable>
           <el-option v-for="item in topicLevels" :key="item.level" :label="item.label" :value="item.level" />
         </el-select>
       </header>
       <!-- 表格 -->
-      <topic-table :tableConfig="tableConfig" :tableData="tableData" :colConfig="colConfig">
+      <hope-table
+        v-model:query="query"
+        :tableConfig="tableConfig"
+        :tableData="tableData"
+        :colConfig="colConfig"
+        :total="total"
+        @edit="handleEditor"
+        @delete="handleDelete"
+      >
         <!-- 展开的数据 -->
         <template v-slot:expand>
           <el-table-column type="expand">
             <template #default="scope">
-              <div v-html="scope.row.topic"></div>
+              <topic-details :data="scope.row" />
             </template>
           </el-table-column>
         </template>
         <!-- 题目 -->
         <template v-slot:topic>
-          <el-table-column label="题目">
+          <el-table-column label="题目" width="200px">
             <template #default="scope">
               <div>{{ getContent(scope.row.topic) }}</div>
             </template>
@@ -55,20 +63,21 @@
             </template>
           </el-table-column>
         </template>
-      </topic-table>
+      </hope-table>
     </main>
   </div>
 </template>
 <script setup lang="ts">
 import Category from '@/views/components/category/index.vue';
+import HopeTable from '@/views/components/hopeTable/index.vue';
+import TopicDetails from './components/topicDetails.vue';
 import { categoryList } from '@/apis/category';
 import { reactive, ref, watch } from 'vue';
-import { CategoryType } from '@/types/index';
-import { topicTypes, topicLevels, LEVEL_TYPES } from '@/constans';
+import { CategoryType, QuestionFilterType, QuestionType } from '@/types/index';
+import { topicTypes, topicLevels, LEVEL_TYPES } from '@/constants';
 import { getQuestionList } from '@/apis/testQuestion';
-import TopicTable from './components/table.vue';
 
-const query = ref({
+const query = ref<QuestionFilterType>({
   // 分类id
   categoryId: '',
   // 难易程度
@@ -81,15 +90,25 @@ const query = ref({
   pageNum: 1
 });
 
-console.log(query);
+const total = ref<number>(0);
+
+watch(
+  query,
+  () => {
+    fetchData();
+  },
+  { deep: true }
+);
 
 const tableData: any = ref([]);
 const tableConfig = {
   width: '100%',
   headerCellStyle: {
     background: '#f4f4f4'
-  }
+  },
+  selection: true
 };
+// table 列展示
 const colConfig = [
   {
     slot: 'expand'
@@ -137,6 +156,7 @@ const fetchData = async () => {
   try {
     const result = await getQuestionList(query.value);
     tableData.value = result.list || [];
+    total.value = result.total;
   } catch (error) {
     console.log(error);
   }
@@ -149,8 +169,8 @@ const getContent = (content: string) => {
 };
 // 获取分类名称
 const getCategoryLabel = (data: any) => {
-  if (!data.categoryType) return '-';
-  return categoryMap.get(data.categoryType).categoryName;
+  if (!data.categoryId) return '-';
+  return categoryMap.get(data.categoryId).categoryName;
 };
 // 获取题目所属类型
 const getTopicTypeLabel = (type: string | number) => {
@@ -176,23 +196,35 @@ const labelStyle = (type: string | number) => {
       return '';
   }
 };
+
+// 编辑
+const handleEditor = (data: QuestionType) => {
+  console.log(data);
+};
+// 删除
+const handleDelete = (data: { ids: number[] }) => {
+  console.log(data);
+};
 </script>
 <style lang="scss">
 .qu-wrapper {
   display: flex;
   .qu-main {
+    flex: 1;
     margin-left: 20px;
     .qu-header {
+      margin-bottom: 20px;
       .el-select {
         width: 100px;
         margin-right: 20px;
       }
     }
     .label-tip {
-      padding: 2px 6px;
+      padding: 1px 6px;
       border-radius: 4px;
       background-color: red;
       color: white;
+      font-size: 12px;
       &.is-easy {
         background-color: $color-success;
       }

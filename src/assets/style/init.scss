@@ -51,3 +51,24 @@ main {
   background-color: white;
   border-radius: 4px;
 }
+
+// wangEditor 重置全局样式
+.we-content {
+  table {
+    border-collapse: collapse;
+    tr > th {
+      background-color: #f5f2f0;
+      font-weight: 700;
+      text-align: center;
+    }
+    tr > td {
+      text-align: left;
+    }
+    tr > th, tr > td {
+      border: 1px solid #ccc;
+      line-height: 1.5;
+      min-width: 30px;
+      padding: 3px 5px;
+    }
+  }
+}

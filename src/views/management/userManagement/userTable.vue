@@ -21,7 +21,6 @@
         <el-popconfirm
           confirm-button-text="确定"
           cancel-button-text="取消"
-          :icon="InfoFilled"
           icon-color="#626AEF"
           :title="`确认删除“${scope.row.name}”账户`"
           @confirm="handleDelete(scope.row)"
@@ -37,7 +36,7 @@
     <el-pagination
       v-model:currentPage="paginationQuery.pageNum"
       :page-sizes="[10, 20, 30, 50]"
-      :small="small"
+      small="small"
       layout="total, sizes, prev, pager, next"
       :total="paginationQuery.total"
       @size-change="handleSizeChange"

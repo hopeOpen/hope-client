@@ -17,7 +17,7 @@
           <el-icon><house /></el-icon>
           <span>{{ nav.name }}</span>
         </el-menu-item>
-        <el-sub-menu v-else :key="nav.sign" :index="nav.path">
+        <el-sub-menu v-else :key="`${nav.sign}-`" :index="nav.path">
           <template #title>
             <el-icon><house /></el-icon>
             <span>{{ nav.name }}</span>

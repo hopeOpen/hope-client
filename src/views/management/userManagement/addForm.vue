@@ -32,7 +32,7 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { AddUserInfoType } from '@/types/index';
 import { FormRules } from 'element-plus';
-import { RULE_TYPES } from '@/constans/index';
+import { RULE_TYPES } from '@/constants/index';
 export default defineComponent({
   name: 'AddForm',
   setup(props, { expose }) {

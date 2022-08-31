@@ -13,7 +13,7 @@
         @onBlur="handleBlur"
       />
     </template>
-    <p class="content" v-show="showContent" v-html="htmlValue"></p>
+    <p class="content we-content" v-show="showContent" v-html="htmlValue"></p>
   </div>
 </template>
 <script setup lang="ts">
@@ -168,11 +168,13 @@ const htmlValue = computed({
   .toolbar {
     width: calc(100% + 2px);
     border: 1px solid #ccc;
+    z-index: 99999;
   }
   .editor {
     width: calc(100% + 2px);
     border: 1px solid #ccc;
     border-top: none;
+    z-index: 99999;
   }
   // wangeditor覆盖样式
   ol,

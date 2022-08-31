@@ -20,10 +20,10 @@
 import { ref, reactive, defineEmits, computed, defineProps, watch } from 'vue';
 import { categoryList } from '@/apis/category';
 import { CategoryType } from '@/types/index';
-const emit = defineEmits(['update:categoryType']);
+const emit = defineEmits(['update:categoryId']);
 const category = ref<any>();
 const props = defineProps({
-  categoryType: {
+  categoryId: {
     type: [Number, String],
     default: ''
   }
@@ -39,8 +39,8 @@ const fetchCategory = () => {
   categoryList().then((res) => {
     categoryData.length = 0;
     categoryData.push(...res);
-    getConnectLabel(props.categoryType);
-    console.log('pppp', props.categoryType, treeRef.value);
+    getConnectLabel(props.categoryId);
+    console.log('pppp', props.categoryId, treeRef.value);
   });
 };
 fetchCategory();
@@ -75,12 +75,12 @@ const setCurrentKey = (value: number | string) => {
 
 const categoryTypeValue = computed({
   get() {
-    return props.categoryType;
+    return props.categoryId;
   },
   set(val) {
     console.log('==', val);
     setCurrentKey(val);
-    emit('update:categoryType', val);
+    emit('update:categoryId', val);
   }
 });
 
@@ -88,7 +88,7 @@ const categoryTypeValue = computed({
 //   category,
 //   (value) => {
 //     setCurrentKey(value.id);
-//     emit('update:categoryType', value.id);
+//     emit('update:categoryId', value.id);
 //   },
 //   {
 //     deep: true
@@ -96,7 +96,7 @@ const categoryTypeValue = computed({
 // );
 
 watch(
-  () => props.categoryType,
+  () => props.categoryId,
   (value) => {
     if (!value) {
       category.value = '';

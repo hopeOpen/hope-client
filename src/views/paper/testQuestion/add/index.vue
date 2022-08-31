@@ -25,39 +25,39 @@ import { ElMessage } from 'element-plus';
 
 const defaultData = {
   // 题目
-  topic: 'js good',
+  topic: '',
   // 正确答案
-  correctOption: 'A',
+  correctOption: '',
   // 选项
   options: [
     {
       label: 'A',
-      answer: '1'
+      answer: ''
     },
     {
       label: 'B',
-      answer: '2'
+      answer: ''
     },
     {
       label: 'C',
-      answer: '3'
+      answer: ''
     },
     {
       label: 'D',
-      answer: '4'
+      answer: ''
     }
   ],
   // 解析
-  parsing: '解析'
+  parsing: ''
 };
 
 const typesParams = ref({
   // 试题分类
-  categoryType: 13,
+  categoryId: '',
   // 题目类型
-  topicType: 1,
+  topicType: '',
   // 题目难度
-  level: 1
+  level: ''
 });
 
 watch(
@@ -86,7 +86,7 @@ const reset = () => {
     parsing: ''
   });
   Object.assign(typesParams.value, {
-    categoryType: '',
+    categoryId: '',
     topicType: 0,
     level: 0
   });
