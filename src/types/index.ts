@@ -61,10 +61,11 @@ interface OptionsType {
   answer: string;
 }
 
-// 新增题目格式
+// 新增/编辑题目格式
 export interface QuestionType {
+  id?: number | string;
   // 试题分类
-  categoryType: number;
+  categoryId: number;
   // 题目分类
   topicType: number;
   // 题目

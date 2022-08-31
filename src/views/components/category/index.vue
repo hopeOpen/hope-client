@@ -149,7 +149,11 @@ const defaultNode = {
 const currentNodeKey = ref();
 const dialogNode: any = ref({});
 const handleNodeClick = (node: any) => {
-  currentNodeKey.value = node;
+  currentNodeKey.value = node.id;
+  // 父节点
+  if (node.id === defaultNode.id) {
+    treeRef.value.setCurrentKey(null);
+  }
 };
 const dialogVisible = ref(false);
 const handleAdd = (node: any) => {
@@ -163,7 +167,7 @@ const props = defineProps({
     type: Object
   },
   categoryId: {
-    type: String,
+    type: [String, Number],
     default: ''
   }
 });
@@ -171,7 +175,7 @@ const props = defineProps({
 watch(
   currentNodeKey,
   (val) => {
-    emit('update:categoryId', val.id);
+    emit('update:categoryId', val);
   },
   { deep: true }
 );

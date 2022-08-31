@@ -5,7 +5,7 @@
         试题分类
         <i class="require">*</i>
       </span>
-      <category-select v-model:categoryType="typeParamsValue.categoryType" />
+      <category-select v-model:categoryId="typeParamsValue.categoryId" />
     </p>
     <p class="item">
       <span class="label">
@@ -29,7 +29,7 @@
 </template>
 <script setup lang="ts">
 import { computed, defineEmits, defineProps } from 'vue';
-import { topicTypes, topicLevels } from '@/constans';
+import { topicTypes, topicLevels } from '@/constants';
 import CategorySelect from '@/views/components/categorySelect/index.vue';
 const emit = defineEmits(['update:typeParams']);
 
