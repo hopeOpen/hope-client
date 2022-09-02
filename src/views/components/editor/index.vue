@@ -5,7 +5,7 @@
       <Toolbar class="toolbar" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
       <Editor
         class="editor"
-        style="height: 58px; overflow-y: hidden"
+        style="height: 120px; overflow-y: hidden"
         v-model="htmlValue"
         :defaultConfig="editorConfig"
         :mode="mode"
@@ -116,10 +116,11 @@ const handleCreated = (editor: any) => {
   editorRef.value = editor; // 记录 editor 实例，重要！
 };
 const handleBlur = () => {
+  showEditor.value = false;
   if (htmlValue.value === '<p><br></p>') {
     emit('update:html', '');
+    return;
   }
-  showEditor.value = false;
   emit('update:html', htmlValue.value, props.currentIndex);
 };
 const handleShowEditor = () => {
