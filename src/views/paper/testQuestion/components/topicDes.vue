@@ -34,17 +34,5 @@ const htmlValue = computed({
 <style lang="scss">
 .topic-wrapper {
   display: flex;
-  .component-label {
-    width: 44px;
-    height: 20px;
-    line-height: 20px;
-    text-align: center;
-    background: #f1f3f8;
-    font-size: 12px;
-    color: #656577;
-    margin-right: 16px;
-    position: relative;
-    top: 10px;
-  }
 }
 </style>
