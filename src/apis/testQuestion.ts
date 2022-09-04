@@ -10,3 +10,8 @@ export const addQuestion = async (params: QuestionType): Promise<any> => {
 export const getQuestionList = async (params: QuestionFilterType): Promise<any> => {
   return await $post('/paper/question-list', params);
 };
+
+// 删除题目
+export const deleteQuestion = async (params: { ids: number[] }): Promise<any> => {
+  return await $post('/paper/delete-question', params);
+};

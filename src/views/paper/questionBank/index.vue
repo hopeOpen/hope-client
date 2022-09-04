@@ -35,7 +35,7 @@
         <template v-slot:topic>
           <el-table-column label="题目" width="200px">
             <template #default="scope">
-              <div>{{ getContent(scope.row.topic) }}</div>
+              <div class="content-ellipsis">{{ getContent(scope.row.topic) }}</div>
             </template>
           </el-table-column>
         </template>
@@ -57,7 +57,7 @@
         </template>
         <!-- 难度 -->
         <template v-slot:level>
-          <el-table-column label="所属类型">
+          <el-table-column label="难度">
             <template #default="scope">
               <span class="label-tip" :class="labelStyle(scope.row.level)">{{ getLabelLabel(scope.row.level) }}</span>
             </template>
@@ -75,7 +75,8 @@ import { categoryList } from '@/apis/category';
 import { reactive, ref, watch } from 'vue';
 import { CategoryType, QuestionFilterType, QuestionType } from '@/types/index';
 import { topicTypes, topicLevels, LEVEL_TYPES } from '@/constants';
-import { getQuestionList } from '@/apis/testQuestion';
+import { getQuestionList, deleteQuestion } from '@/apis/testQuestion';
+import { ElMessage } from 'element-plus';
 
 const query = ref<QuestionFilterType>({
   // 分类id
@@ -202,16 +203,28 @@ const handleEditor = (data: QuestionType) => {
   console.log(data);
 };
 // 删除
-const handleDelete = (data: { ids: number[] }) => {
-  console.log(data);
+const handleDelete = async (data: { ids: number[] }) => {
+  try {
+    await deleteQuestion(data);
+    ElMessage({
+      type: 'success',
+      message: '删除成功'
+    });
+    fetchData();
+  } catch (error) {
+    console.log(error);
+  }
 };
 </script>
 <style lang="scss">
 .qu-wrapper {
   display: flex;
+  height: 100%;
   .qu-main {
     flex: 1;
     margin-left: 20px;
+    display: flex;
+    flex-direction: column;
     .qu-header {
       margin-bottom: 20px;
       .el-select {

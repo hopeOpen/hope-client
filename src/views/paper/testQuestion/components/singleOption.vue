@@ -9,7 +9,19 @@
         @mouseenter="onMouseenter(index)"
         @mouseleave="onMouseleave()"
       >
-        <el-radio :label="getOptionsLabel(index)" v-model="correctOptionValue"></el-radio>
+        <!-- 单选框 -->
+        <el-radio
+          v-if="TOPIC_TYPE.SINGLE_CHOICE === props.topicType"
+          :label="getOptionsLabel(index)"
+          v-model="correctOptionValue"
+        ></el-radio>
+        <!-- 多选框 -->
+        <el-checkbox
+          v-if="TOPIC_TYPE.MULTIPLE_CHOICE === props.topicType"
+          v-model="muCorrectOptionValue[index]"
+          :label="getOptionsLabel(index)"
+          size="large"
+        />
         <h-editor class="h-editor" :currentIndex="index" :placeholder="placeholder" v-model:html="item.answer" />
         <p class="operation" :class="actionIndex === index && 'is-show'">
           <el-icon @click="handleDelete(index)"><Delete /></el-icon>
@@ -29,9 +41,10 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { ref, defineEmits, defineExpose, defineProps, computed } from 'vue';
+import { ref, defineEmits, defineExpose, defineProps, computed, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import HEditor from '@/views/components/editor/index.vue';
+import { TOPIC_TYPE } from '@/constants';
 interface OptionsType {
   label: string;
   answer: string;
@@ -39,6 +52,7 @@ interface OptionsType {
 type PropsType = {
   options: OptionsType[];
   correctOption: string;
+  topicType: string | number;
 };
 const props = defineProps<PropsType>();
 
@@ -62,6 +76,15 @@ const correctOptionValue = computed({
     emit('update:correctOption', val);
   }
 });
+// 多想答案
+const muCorrectOptionValue = ref([]);
+watch(
+  muCorrectOptionValue,
+  (val) => {
+    console.log();
+  },
+  { deep: true }
+);
 
 const placeholder = '选项，点此编辑；选中即设置为正确答案 (必填)';
 
@@ -175,6 +198,9 @@ const handleMoveDown = (index: number) => {
     margin-bottom: 12px;
     .el-radio {
       margin: 2px 14px 0 0;
+    }
+    .el-checkbox {
+      margin: -2px 14px 0 0;
     }
     .item {
       width: 100%;

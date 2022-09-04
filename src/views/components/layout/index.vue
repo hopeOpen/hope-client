@@ -53,6 +53,7 @@ export default defineComponent({
     position: relative;
     &__section {
       flex: 1;
+      overflow: hidden;
       padding: $common-padding;
       box-sizing: border-box;
       background-color: #f6f8f9;

@@ -1,3 +1,123 @@
+html,
+body,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+input,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+textarea,
+article,
+aside,
+audio,
+canvas,
+figure,
+footer,
+header,
+mark,
+menu,
+nav,
+section,
+time,
+video {
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+article,
+aside,
+dialog,
+figure,
+footer,
+header,
+hgroup,
+nav,
+section,
+blockquote {
+  display: block;
+}
+ul,
+ol {
+  list-style: none;
+}
+img {
+  border: 0 none;
+  vertical-align: top;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+strong,
+em,
+i {
+  font-style: normal;
+  font-weight: normal;
+}
+ins {
+  text-decoration: underline;
+}
+del {
+  text-decoration: line-through;
+}
+mark {
+  background: none;
+}
+input::-ms-clear {
+  display: none !important;
+}
+body {
+  font: 12px/1.5 \5FAE\8F6F\96C5\9ED1, \5B8B\4F53, 'Hiragino Sans GB', STHeiti, 'WenQuanYi Micro Hei',
+    'Droid Sans Fallback', SimSun, sans-serif;
+  background: #fff;
+}
+a {
+  text-decoration: none;
+  color: #333;
+}
+a:hover {
+  text-decoration: underline;
+}
+
 /**
 	* 滚动条优化
 	*/
@@ -54,6 +174,7 @@ main {
 
 // wangEditor 重置全局样式
 .we-content {
+  // 表格
   table {
     border-collapse: collapse;
     tr > th {
@@ -64,11 +185,58 @@ main {
     tr > td {
       text-align: left;
     }
-    tr > th, tr > td {
+    tr > th,
+    tr > td {
       border: 1px solid #ccc !important;
       line-height: 1.5;
       min-width: 30px;
       padding: 3px 5px;
+    }
+  }
+  // 代码块
+  pre {
+    font-family: monospace, monospace;
+    font-size: 1em;
+    code {
+      display: block;
+      padding: 10px;
+      font-family: monospace;
+      background-color: #eee;
+      border-radius: 3px;
+    }
+  }
+  code[class*='language-'],
+  pre[class*='language-'] {
+    color: black;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 1em;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    tab-size: 4;
+    hyphens: none;
+  }
+  pre[class*='language-'] {
+    padding: 1em;
+    margin: 0.5em 0;
+    overflow: auto;
+    background: #f5f2f0;
+  }
+  // 无序列表有序列表
+  ul,
+  ol {
+    list-style: auto;
+  }
+  // checkbox
+  div[data-w-e-type='todo'] {
+    display: flex;
+    align-items: center;
+    input[type='checkbox'] {
+      margin-right: 10px !important;
     }
   }
 }

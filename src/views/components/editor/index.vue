@@ -153,6 +153,11 @@ const htmlValue = computed({
   &:hover {
     border: 1px solid #1a8cfe;
   }
+  & > .plo,
+  & > .content {
+    min-height: 36.5px;
+    line-height: 36.5px;
+  }
   &.focus-style {
     &:hover {
       border: 1px solid transparent;
