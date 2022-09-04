@@ -5,7 +5,12 @@
     <!-- 题干 -->
     <topic v-model:html.sync="data.topic" />
     <!-- 单选 -->
-    <single-option ref="singleOptionRef" v-model:options="data.options" v-model:correctOption="data.correctOption" />
+    <single-option
+      ref="singleOptionRef"
+      :topicType="typesParams.topicType"
+      v-model:options="data.options"
+      v-model:correctOption="data.correctOption"
+    />
     <!-- 解析 -->
     <parsing v-model:html="data.parsing" />
     <p class="btns">
@@ -21,13 +26,14 @@ import Parsing from '@/views/paper/testQuestion/components/parsing.vue';
 import SingleOption from '@/views/paper/testQuestion/components/singleOption.vue';
 import TypeSelection from '@/views/paper/testQuestion/components/typeSelection.vue';
 import { addQuestion } from '@/apis/testQuestion';
+import { TOPIC_TYPE, LEVEL_TYPES } from '@/constants';
 import { ElMessage } from 'element-plus';
 
 const defaultData = {
   // 题目
   topic: '',
   // 正确答案
-  correctOption: '',
+  correctOption: [],
   // 选项
   options: [
     {
@@ -55,9 +61,9 @@ const typesParams = ref({
   // 试题分类
   categoryId: '',
   // 题目类型
-  topicType: '',
+  topicType: TOPIC_TYPE.SINGLE_CHOICE,
   // 题目难度
-  level: ''
+  level: LEVEL_TYPES.EASY
 });
 
 watch(

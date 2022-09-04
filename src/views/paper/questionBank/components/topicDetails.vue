@@ -4,22 +4,25 @@
       <!-- 题目 -->
       <div class="item">
         <span class="component-label">题干</span>
-        <span class="we-content" v-html="topic"></span>
+        <span class="content we-content" v-html="topic"></span>
       </div>
       <!-- 选项 -->
       <div class="item options-wrap">
         <span class="component-label">选项</span>
-        <p class="option" v-for="op in options" :key="op.label">
-          <span>{{ op.label }}</span>
-          :
+        <p class="option content" v-for="op in options" :key="op.label">
+          <span>{{ op.label }} :</span>
           <span class="option-content" v-html="op.answer"></span>
         </p>
       </div>
     </div>
     <div class="con-right">
       <p class="item">
+        <span class="component-label">答案</span>
+        <span class="content">{{ correctOption }}</span>
+      </p>
+      <p class="item">
         <span class="component-label">解析</span>
-        <span v-html="parsing"></span>
+        <span class="content we-content" v-html="parsing"></span>
       </p>
     </div>
   </main>
@@ -36,8 +39,8 @@ const props = defineProps<{
   data: QuestionType;
 }>();
 const topic = computed(() => {
-  const content = props.data.topic;
-  content.replace(/<p><br><\/p>$/, '');
+  let content = props.data.topic;
+  content = content.replace(/<p><br><\/p>$/g, '');
   return content;
 });
 const options = computed(() => {
@@ -45,6 +48,9 @@ const options = computed(() => {
 });
 const parsing = computed(() => {
   return props.data.parsing;
+});
+const correctOption = computed(() => {
+  return props.data.correctOption;
 });
 </script>
 <style lang="scss">
@@ -55,6 +61,9 @@ const parsing = computed(() => {
   .con-left,
   .con-right {
     flex: 1;
+  }
+  .con-left + .con-right {
+    margin-left: 20px;
   }
   .item {
     display: flex;
@@ -67,10 +76,14 @@ const parsing = computed(() => {
       margin-top: 10px;
     }
     .option {
+      display: flex;
       margin: 4px 0px;
       &-content {
         margin-left: 10px;
       }
+    }
+    .content {
+      margin-left: 48px;
     }
   }
 }

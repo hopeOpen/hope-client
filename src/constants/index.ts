@@ -17,14 +17,22 @@ export const CategoryLevel = {
 };
 
 // 题目类型
+export const TOPIC_TYPE = {
+  // 单选
+  SINGLE_CHOICE: 0,
+  // 多选
+  MULTIPLE_CHOICE: 1
+};
+
+// 题目类型
 export const topicTypes = [
   {
     label: '单选题',
-    key: 0
+    key: TOPIC_TYPE.SINGLE_CHOICE
   },
   {
     label: '多选题',
-    key: 1
+    key: TOPIC_TYPE.MULTIPLE_CHOICE
   }
 ];
 

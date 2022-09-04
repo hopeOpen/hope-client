@@ -1,33 +1,36 @@
 <template>
   <div class="hope-table__block">
-    <el-table
-      v-bind="props.tableConfig"
-      :data="props.tableData"
-      style="width: 100%"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" v-if="props.tableConfig.selection" width="38px" />
-      <template v-for="item in props.colConfig">
-        <slot v-if="item.slot" :name="item.slot" />
-        <el-table-column v-else v-bind="item" :key="item.prop"></el-table-column>
-      </template>
-      <el-table-column label="操作" width="120px">
-        <template #default="scope">
-          <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
-          <el-popconfirm
-            confirm-button-text="确定"
-            cancel-button-text="取消"
-            icon-color="#626AEF"
-            title="确认删除?"
-            @confirm="handleDelete(scope.row, false)"
-          >
-            <template #reference>
-              <el-button type="danger" link>删除</el-button>
-            </template>
-          </el-popconfirm>
+    <div class="table-wrap">
+      <el-table
+        v-bind="props.tableConfig"
+        :data="props.tableData"
+        style="width: 100%"
+        height="100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" v-if="props.tableConfig.selection" width="38px" />
+        <template v-for="item in props.colConfig">
+          <slot v-if="item.slot" :name="item.slot" />
+          <el-table-column v-else v-bind="item" :key="item.prop"></el-table-column>
         </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column label="操作" width="120px">
+          <template #default="scope">
+            <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
+            <el-popconfirm
+              confirm-button-text="确定"
+              cancel-button-text="取消"
+              icon-color="#626AEF"
+              title="确认删除?"
+              @confirm="handleDelete(scope.row, false)"
+            >
+              <template #reference>
+                <el-button type="danger" link>删除</el-button>
+              </template>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <footer class="footer">
       <div>
         <el-button v-if="props.tableConfig.selection && multipleSelection" size="small" @click="handleDelete([], true)">
@@ -94,9 +97,20 @@ const handleSelectionChange = (val: any[]) => {
 </script>
 <style lang="scss">
 .hope-table__block {
-  .el-table__expand-column {
-    .cell {
-      padding: 0 12px 0 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  .table-wrap {
+    flex: 1;
+    overflow: hidden;
+    .el-table {
+      flex: 1;
+    }
+    .el-table__expand-column {
+      .cell {
+        padding: 0 12px 0 0;
+      }
     }
   }
   .footer {
