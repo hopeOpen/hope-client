@@ -4,13 +4,16 @@
     <type-selection ref="typeSelectRef" v-model:typeParams="typesParams" />
     <!-- 题干 -->
     <topic v-model:html.sync="data.topic" />
-    <!-- 单选 -->
-    <single-option
+    <!-- 选择题 -->
+    <topic-option
+      v-show="isChoice"
       ref="singleOptionRef"
       :topicType="typesParams.topicType"
       v-model:options="data.options"
       v-model:correctOption="data.correctOption"
     />
+    <!-- 填空题 -->
+    <question-answer v-show="isBlank" v-model:correctOption="data.correctOption" />
     <!-- 解析 -->
     <parsing v-model:html="data.parsing" />
     <p class="btns">
@@ -20,11 +23,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import Topic from '@/views/paper/testQuestion/components/topicDes.vue';
 import Parsing from '@/views/paper/testQuestion/components/parsing.vue';
-import SingleOption from '@/views/paper/testQuestion/components/singleOption.vue';
+import TopicOption from '@/views/paper/testQuestion/components/topicOption.vue';
 import TypeSelection from '@/views/paper/testQuestion/components/typeSelection.vue';
+import QuestionAnswer from '@/views/paper/testQuestion/components/questionAnswer.vue';
 import { addQuestion } from '@/apis/testQuestion';
 import { TOPIC_TYPE, LEVEL_TYPES } from '@/constants';
 import { ElMessage } from 'element-plus';
@@ -33,7 +37,7 @@ const defaultData = {
   // 题目
   topic: '',
   // 正确答案
-  correctOption: [],
+  correctOption: '',
   // 选项
   options: [
     {
@@ -78,10 +82,17 @@ watch(
 
 const data = ref(JSON.parse(JSON.stringify(defaultData)));
 
-// const onChange = (value: any, radio: string) => {
-//   data.options = value;
-//   data.correctOption = radio;
-// };
+// 是否选择题
+const isChoice = computed(() => {
+  const { SINGLE_CHOICE, MULTIPLE_CHOICE } = TOPIC_TYPE;
+  return [SINGLE_CHOICE, MULTIPLE_CHOICE].includes(typesParams.value.topicType);
+});
+// 是否填空题
+const isBlank = computed(() => {
+  const { FILL_IN_THE_BLANKS } = TOPIC_TYPE;
+  return typesParams.value.topicType === FILL_IN_THE_BLANKS;
+});
+
 // 重置
 const singleOptionRef = ref();
 const reset = () => {
@@ -100,9 +111,21 @@ const reset = () => {
 };
 // 提交
 const submit = async () => {
-  const verify = singleOptionRef.value.checkParams();
+  let verify = false;
+  // 选择题
+  if (isChoice.value) {
+    verify = singleOptionRef.value.checkParams();
+  }
+  // 填空题
+  if (typesParams.value.topicType === TOPIC_TYPE.FILL_IN_THE_BLANKS) {
+    verify = data.value.correctOption !== '';
+  }
   if (verify && data.value.topic.trim()) {
     const params = Object.assign({}, typesParams.value, data.value);
+    // 不是选择题情况下清空选项
+    if (isChoice.value) {
+      params.options = [];
+    }
     try {
       await addQuestion(params);
       // 重置题目

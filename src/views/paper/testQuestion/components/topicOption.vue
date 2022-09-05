@@ -37,7 +37,7 @@
 </template>
 <script lang="ts">
 export default {
-  name: 'SingleOption'
+  name: 'TopicOption'
 };
 </script>
 <script setup lang="ts">
@@ -54,9 +54,21 @@ type PropsType = {
   correctOption: string;
   topicType: string | number;
 };
+const emit = defineEmits(['update:options', 'update:correctOption']);
 const props = defineProps<PropsType>();
 
-const emit = defineEmits(['update:options', 'update:correctOption']);
+// 切换题目类型时 清空已选
+watch(
+  () => props.topicType,
+  (val) => {
+    muCorrectOptionValue.value.length = 0;
+    // 多选特殊处理
+    correctOptionValue.value = '';
+    if (val === TOPIC_TYPE.MULTIPLE_CHOICE) {
+      muCorrectOptionValue.value.push(...new Array(optionsValue.value.length).fill(false));
+    }
+  }
+);
 
 // 选项
 const optionsValue = computed({
@@ -76,12 +88,19 @@ const correctOptionValue = computed({
     emit('update:correctOption', val);
   }
 });
-// 多想答案
-const muCorrectOptionValue = ref([]);
+// 多选答案
+const muCorrectOptionValue = ref(new Array(optionsValue.value.length).fill(false));
 watch(
   muCorrectOptionValue,
   (val) => {
-    console.log();
+    correctOptionValue.value = '';
+    let value = '';
+    val.forEach((item, index) => {
+      if (item) {
+        value = `${value}${optionsValue.value[index].label}`;
+      }
+    });
+    correctOptionValue.value = value;
   },
   { deep: true }
 );
@@ -97,7 +116,12 @@ const addOptions = () => {
     label: optionLabel,
     answer: ''
   });
+  // 多选
+  if (props.topicType === TOPIC_TYPE.MULTIPLE_CHOICE) {
+    muCorrectOptionValue.value.push(false);
+  }
 };
+
 // 获取选项label
 const getOptionsLabel = (index: number) => {
   const currentIndex = index + 65;
@@ -150,6 +174,11 @@ const handleDelete = (index: number) => {
       correctOptionValue.value = String.fromCharCode(correctOptionValue.value.charCodeAt() - 1);
     }
     optionsValue.value.splice(index, 1);
+
+    // 多选
+    if (props.topicType === TOPIC_TYPE.MULTIPLE_CHOICE) {
+      muCorrectOptionValue.value.splice(index, 1);
+    }
   } else {
     ElMessage({
       type: 'warning',
@@ -158,19 +187,37 @@ const handleDelete = (index: number) => {
   }
 };
 
+//选项上移动
 const handleMoveUp = (index: number) => {
   if (index === 0) return;
   [optionsValue.value[index - 1], optionsValue.value[index]] = [
     optionsValue.value[index],
     optionsValue.value[index - 1]
   ];
+
+  // 多选
+  if (props.topicType === TOPIC_TYPE.MULTIPLE_CHOICE) {
+    [muCorrectOptionValue.value[index - 1], muCorrectOptionValue.value[index]] = [
+      muCorrectOptionValue.value[index],
+      muCorrectOptionValue.value[index - 1]
+    ];
+  }
 };
+//选项下移动
 const handleMoveDown = (index: number) => {
   if (index === optionsValue.value.length - 1) return;
   [optionsValue.value[index], optionsValue.value[index + 1]] = [
     optionsValue.value[index + 1],
     optionsValue.value[index]
   ];
+
+  // 多选
+  if (props.topicType === TOPIC_TYPE.MULTIPLE_CHOICE) {
+    [muCorrectOptionValue.value[index], muCorrectOptionValue.value[index + 1]] = [
+      muCorrectOptionValue.value[index + 1],
+      muCorrectOptionValue.value[index]
+    ];
+  }
 };
 </script>
 
@@ -178,18 +225,6 @@ const handleMoveDown = (index: number) => {
 .options-wrapper {
   display: flex;
   margin-top: 12px;
-  .component-label {
-    width: 44px;
-    height: 20px;
-    line-height: 20px;
-    text-align: center;
-    background: #f1f3f8;
-    font-size: 12px;
-    color: #656577;
-    margin-right: 16px;
-    position: relative;
-    top: 22px;
-  }
   .answers-wrapper {
     flex: 1;
     border-top: 1px dashed #dcdfe6;
@@ -207,6 +242,8 @@ const handleMoveDown = (index: number) => {
       display: flex;
       .operation {
         visibility: hidden;
+        display: flex;
+        align-items: center;
         .el-icon {
           margin-left: 10px;
           font-size: 14px;
