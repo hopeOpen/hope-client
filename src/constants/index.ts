@@ -21,7 +21,9 @@ export const TOPIC_TYPE = {
   // 单选
   SINGLE_CHOICE: 0,
   // 多选
-  MULTIPLE_CHOICE: 1
+  MULTIPLE_CHOICE: 1,
+  // 填空
+  FILL_IN_THE_BLANKS: 2
 };
 
 // 题目类型
@@ -33,6 +35,10 @@ export const topicTypes = [
   {
     label: '多选题',
     key: TOPIC_TYPE.MULTIPLE_CHOICE
+  },
+  {
+    label: '填空题',
+    key: TOPIC_TYPE.FILL_IN_THE_BLANKS
   }
 ];
 

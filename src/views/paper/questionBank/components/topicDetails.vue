@@ -7,7 +7,7 @@
         <span class="content we-content" v-html="topic"></span>
       </div>
       <!-- 选项 -->
-      <div class="item options-wrap">
+      <div class="item options-wrap" v-if="isChoice">
         <span class="component-label">选项</span>
         <p class="option content" v-for="op in options" :key="op.label">
           <span>{{ op.label }} :</span>
@@ -18,7 +18,7 @@
     <div class="con-right">
       <p class="item">
         <span class="component-label">答案</span>
-        <span class="content">{{ correctOption }}</span>
+        <span class="content" v-html="correctOption"></span>
       </p>
       <p class="item">
         <span class="component-label">解析</span>
@@ -35,6 +35,7 @@ export default {
 <script setup lang="ts">
 import { defineProps, computed } from 'vue';
 import { QuestionType } from '@/types/index';
+import { TOPIC_TYPE } from '@/constants';
 const props = defineProps<{
   data: QuestionType;
 }>();
@@ -50,7 +51,20 @@ const parsing = computed(() => {
   return props.data.parsing;
 });
 const correctOption = computed(() => {
-  return props.data.correctOption;
+  const { correctOption, topicType } = props.data;
+  // 多选的情况
+  if (topicType === TOPIC_TYPE.MULTIPLE_CHOICE) {
+    const answers = correctOption.split('');
+    return answers.reduce((str, item, index) => {
+      return `${str}${item}${index !== answers.length - 1 ? '、' : ''}`;
+    }, '');
+  }
+  return correctOption;
+});
+// 是否选择题
+const isChoice = computed(() => {
+  const { SINGLE_CHOICE, MULTIPLE_CHOICE } = TOPIC_TYPE;
+  return [SINGLE_CHOICE, MULTIPLE_CHOICE].includes(props.data.topicType);
 });
 </script>
 <style lang="scss">
