@@ -64,3 +64,9 @@ export const topicLevels = [
     level: LEVEL_TYPES.HARD
   }
 ];
+
+// 操作类型
+export const OPERATING_TYPE = {
+  ADD: 'add',
+  EDIT: 'edit'
+};

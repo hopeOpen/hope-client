@@ -2,7 +2,7 @@
   <div class="input-content__block">
     <span class="component-label">答案</span>
     <div class="answers-wrapper">
-      <h-editor class="h-editor" :placeholder="placeholder" v-model:html="correctOptionValue" />
+      <h-editor class="h-editor" placeholder="点此编辑 (必填)" v-model:html="correctOptionValue" />
     </div>
   </div>
 </template>
@@ -14,17 +14,21 @@ export default {
 <script setup lang="ts">
 import HEditor from '@/views/components/editor/index.vue';
 import { defineProps, computed, defineEmits } from 'vue';
-const emit = defineEmits(['update:correctOption']);
-const props = defineProps<{
-  correctOption: string;
-}>();
-const placeholder = '点此编辑 (必填)';
+const emit = defineEmits(['update:html']);
+
+const props = defineProps({
+  html: {
+    type: String,
+    default: ''
+  }
+});
+
 const correctOptionValue = computed({
   get() {
-    return props.correctOption;
+    return props.html;
   },
   set(val) {
-    emit('update:correctOption', val);
+    emit('update:html', val);
   }
 });
 </script>
