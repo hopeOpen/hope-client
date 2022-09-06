@@ -6,33 +6,42 @@
     <topic v-model:html.sync="data.topic" />
     <!-- 选择题 -->
     <topic-option
-      v-show="isChoice"
+      v-if="isChoice"
       ref="singleOptionRef"
       :topicType="typesParams.topicType"
       v-model:options="data.options"
       v-model:correctOption="data.correctOption"
     />
     <!-- 填空题 -->
-    <question-answer v-show="isBlank" v-model:correctOption="data.correctOption" />
+    <question-answer v-if="isBlank" v-model:html="data.correctOption" />
     <!-- 解析 -->
     <parsing v-model:html="data.parsing" />
     <p class="btns">
-      <el-button @click="reset">重置</el-button>
-      <el-button type="primary" @click="submit">提交</el-button>
+      <el-button @click="reset" v-if="!isEdit">重置</el-button>
+      <el-button type="primary" @click="submit">{{ isEdit ? '保存' : '提交' }}</el-button>
     </p>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch, computed } from 'vue';
+import { ref, computed, defineProps } from 'vue';
+import { useRoute } from 'vue-router';
 import Topic from '@/views/paper/testQuestion/components/topicDes.vue';
 import Parsing from '@/views/paper/testQuestion/components/parsing.vue';
 import TopicOption from '@/views/paper/testQuestion/components/topicOption.vue';
 import TypeSelection from '@/views/paper/testQuestion/components/typeSelection.vue';
 import QuestionAnswer from '@/views/paper/testQuestion/components/questionAnswer.vue';
-import { addQuestion } from '@/apis/testQuestion';
-import { TOPIC_TYPE, LEVEL_TYPES } from '@/constants';
+import { TOPIC_TYPE, LEVEL_TYPES, OPERATING_TYPE } from '@/constants';
 import { ElMessage } from 'element-plus';
-
+import { addQuestion, questionDetail, updateQuestion } from '@/apis/testQuestion';
+import { QuestionType } from '@/types';
+const route = useRoute();
+const props = defineProps<{
+  operatingType: string;
+}>();
+// 是否编辑模式
+const isEdit = computed(() => {
+  return props.operatingType === OPERATING_TYPE.EDIT;
+});
 const defaultData = {
   // 题目
   topic: '',
@@ -70,16 +79,6 @@ const typesParams = ref({
   level: LEVEL_TYPES.EASY
 });
 
-watch(
-  typesParams,
-  (val) => {
-    console.log('ye===>', val);
-  },
-  {
-    deep: true
-  }
-);
-
 const data = ref(JSON.parse(JSON.stringify(defaultData)));
 
 // 是否选择题
@@ -96,7 +95,7 @@ const isBlank = computed(() => {
 // 重置
 const singleOptionRef = ref();
 const reset = () => {
-  Object.assign(data, {
+  Object.assign(data.value, {
     topic: '',
     correctOption: '',
     options: [],
@@ -110,7 +109,7 @@ const reset = () => {
   data.value = JSON.parse(JSON.stringify(defaultData));
 };
 // 提交
-const submit = async () => {
+const submit = () => {
   let verify = false;
   // 选择题
   if (isChoice.value) {
@@ -126,20 +125,71 @@ const submit = async () => {
     if (isChoice.value) {
       params.options = [];
     }
-    try {
-      await addQuestion(params);
-      // 重置题目
-      reset();
-      ElMessage({
-        type: 'success',
-        message: '新增成功'
-      });
-    } catch (error) {
-      console.log(error);
+    if (isEdit.value) {
+      edit(params);
+    } else {
+      add(params);
     }
   }
 };
+// 新增
+const add = async (params: QuestionType) => {
+  try {
+    await addQuestion(params);
+    // 重置题目
+    reset();
+    ElMessage({
+      type: 'success',
+      message: '新增成功'
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+// 更新
+const edit = async (params: QuestionType) => {
+  try {
+    params.id = route.query.questionId as string;
+    await updateQuestion(params);
+    ElMessage({
+      type: 'success',
+      message: '更新成功'
+    });
+    setTimeout(() => {
+      window.close();
+    }, 500);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// 获取题目详情
+const id: string | undefined = route.query.questionId as string | undefined;
+if (id) {
+  getQuestionDetail({ id });
+}
+async function getQuestionDetail(params: { id: string }) {
+  try {
+    const result = await questionDetail(params);
+    const typesParamsKeys = Object.keys(typesParams.value);
+    const dataKeys = Object.keys(data.value);
+    const typesParamsMap: any = {};
+    const dataMap: any = {};
+    for (const key of typesParamsKeys) {
+      typesParamsMap[key] = result[key];
+    }
+    for (const key of dataKeys) {
+      dataMap[key] = result[key];
+    }
+    Object.assign(typesParams.value, typesParamsMap);
+    Object.assign(data.value, dataMap);
+    console.log('data.value', data.value);
+  } catch (error) {
+    console.log(error);
+  }
+}
 </script>
+
 <style lang="scss">
 .question-wrapper {
   padding: 0px 20px 20px 20px;

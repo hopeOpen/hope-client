@@ -77,7 +77,6 @@ import { CategoryType, QuestionFilterType, QuestionType } from '@/types/index';
 import { topicTypes, topicLevels, LEVEL_TYPES } from '@/constants';
 import { getQuestionList, deleteQuestion } from '@/apis/testQuestion';
 import { ElMessage } from 'element-plus';
-
 const query = ref<QuestionFilterType>({
   // 分类id
   categoryId: '',
@@ -200,7 +199,7 @@ const labelStyle = (type: string | number) => {
 
 // 编辑
 const handleEditor = (data: QuestionType) => {
-  console.log(data);
+  window.open(`#/paper/testQuestion?questionId=${data.id}`, '_blank');
 };
 // 删除
 const handleDelete = async (data: { ids: number[] }) => {

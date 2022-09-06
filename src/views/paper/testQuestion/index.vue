@@ -1,35 +1,31 @@
 <template>
   <div class="que-wrapper">
     <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="changeActiveTab">
-      <el-tab-pane :label="tab.label" :name="tab.key" v-for="tab in tabLIst" :key="tab.id">
-        <component :is="tab.component" v-if="activeTab === tab.key" />
+      <el-tab-pane :label="tab.label" :name="tab.key" v-for="tab in tabList" :key="tab.id">
+        <component :is="tab.component" :operatingType="operatingType" v-if="activeTab === tab.key" />
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import addQuestion from './add/index.vue';
+import { OPERATING_TYPE } from '@/constants';
+
 const activeTab = ref<string | LocationQueryValue[]>('');
 const router = useRouter();
 const route = useRoute();
-const tabLIst = [
+const tabList = ref([
   {
     label: '新增题目',
     key: 'addQuestion',
     id: 1,
     component: addQuestion
-  },
-  {
-    label: '新增题目1',
-    key: 'addQuestion1',
-    id: 2,
-    component: addQuestion
   }
-];
-console.log(route.query.query);
+]);
 activeTab.value = route.query.type || 'addQuestion';
+
 const changeActiveTab = () => {
   if (activeTab.value === 'addQuestion') {
     router.push({ path: '/paper/testQuestion?type=addQuestion' });
@@ -37,6 +33,22 @@ const changeActiveTab = () => {
     router.push({ path: '/paper/testQuestion?type=addQuestion1' });
   }
 };
+
+// 操作类型
+const operatingType = ref(OPERATING_TYPE.ADD);
+watch(
+  () => route.query.questionId,
+  (val) => {
+    if (val) {
+      operatingType.value = OPERATING_TYPE.EDIT;
+      tabList.value[0].label = '编辑题目';
+    }
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+);
 </script>
 <style lang="scss">
 .que-wrapper {
