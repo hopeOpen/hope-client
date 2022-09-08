@@ -14,16 +14,23 @@
     >
       <template v-for="nav in navs">
         <el-menu-item :index="nav.path" :key="nav.sign" v-if="!nav.subnavs">
-          <el-icon><house /></el-icon>
+          <el-icon>
+            <component :is="nav.icon"></component>
+          </el-icon>
           <span>{{ nav.name }}</span>
         </el-menu-item>
         <el-sub-menu v-else :key="`${nav.sign}-`" :index="nav.path">
           <template #title>
-            <el-icon><house /></el-icon>
+            <el-icon>
+              <component :is="nav.icon"></component>
+            </el-icon>
             <span>{{ nav.name }}</span>
           </template>
           <el-menu-item-group>
             <el-menu-item :index="childNav.path" v-for="childNav in nav.subnavs" :key="childNav.sign">
+              <el-icon>
+                <component :is="childNav.icon"></component>
+              </el-icon>
               <span>{{ childNav.name }}</span>
             </el-menu-item>
           </el-menu-item-group>
