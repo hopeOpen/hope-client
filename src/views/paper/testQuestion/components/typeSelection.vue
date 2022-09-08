@@ -12,7 +12,13 @@
         题目类型
         <i class="require">*</i>
       </span>
-      <el-select size="small" class="topic-select" v-model="typeParamsValue.topicType" placeholder="选择分类">
+      <el-select
+        size="small"
+        class="topic-select"
+        v-model="typeParamsValue.topicType"
+        placeholder="选择分类"
+        @change="handleChange"
+      >
         <el-option v-for="item in topicTypes" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
     </p>
@@ -31,7 +37,7 @@
 import { computed, defineEmits, defineProps } from 'vue';
 import { topicTypes, topicLevels } from '@/constants';
 import CategorySelect from '@/views/components/categorySelect/index.vue';
-const emit = defineEmits(['update:typeParams']);
+const emit = defineEmits(['update:typeParams', 'topicTypeChange']);
 
 const props = defineProps({
   typeParams: {
@@ -50,6 +56,10 @@ const typeParamsValue = computed({
     return true;
   }
 });
+
+const handleChange = () => {
+  emit('topicTypeChange');
+};
 </script>
 <style lang="scss">
 .type-wrapper {

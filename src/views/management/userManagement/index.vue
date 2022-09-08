@@ -58,7 +58,6 @@ export default defineComponent({
 
     // 确认提交
     const handleConfirm = () => {
-      console.log('handleConfirm', userFormRef.value);
       // 校验表单
       userFormRef.value.userFormRef.validate((valid: boolean) => {
         if (!valid) {
@@ -79,7 +78,6 @@ export default defineComponent({
     };
     // 取消
     const handleCancel = () => {
-      console.log('handleCancel');
       userFormRef.value.init();
       hopeDialogRef.value.close();
     };

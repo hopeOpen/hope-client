@@ -71,7 +71,7 @@ export interface QuestionType {
   // 题目
   topic: string;
   // 选项
-  options: OptionsType[] | string;
+  options: OptionsType[];
   // 正确答案
   correctOption: string;
   // 描述

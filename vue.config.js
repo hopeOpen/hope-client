@@ -2,13 +2,13 @@
 const path = require('path');
 module.exports = {
   devServer: {
-    host: 'localhost',
+    host: '0.0.0.0',
     port: 8618,
     https: false,
     open: true,
     proxy: {
       '/hope-api': {
-        target: 'http://127.0.0.1:7001',
+        target: 'http://127.0.0.1:8619',
         changeOrigin: true
       }
     }

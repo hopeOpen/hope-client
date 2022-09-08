@@ -40,7 +40,6 @@ const fetchCategory = () => {
     categoryData.length = 0;
     categoryData.push(...res);
     getConnectLabel(props.categoryId);
-    console.log('pppp', props.categoryId, treeRef.value);
   });
 };
 fetchCategory();
@@ -83,17 +82,6 @@ const categoryTypeValue = computed({
     emit('update:categoryId', val);
   }
 });
-
-// watch(
-//   category,
-//   (value) => {
-//     setCurrentKey(value.id);
-//     emit('update:categoryId', value.id);
-//   },
-//   {
-//     deep: true
-//   }
-// );
 
 watch(
   () => props.categoryId,

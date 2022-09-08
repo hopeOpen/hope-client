@@ -312,7 +312,8 @@ const handleDialogContinue = async (content: string) => {
   box-sizing: border-box;
   display: flex;
   flex-flow: column;
-  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
   height: 100%;
 
   .category-main {

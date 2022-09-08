@@ -1,14 +1,14 @@
 <template>
   <div class="question-wrapper">
     <!-- 分类选项 -->
-    <type-selection ref="typeSelectRef" v-model:typeParams="typesParams" />
+    <type-selection ref="typeSelectRef" v-model:typeParams="data" @topicTypeChange="handleTopicTypeChange" />
     <!-- 题干 -->
     <topic v-model:html.sync="data.topic" />
     <!-- 选择题 -->
     <topic-option
       v-if="isChoice"
-      ref="singleOptionRef"
-      :topicType="typesParams.topicType"
+      ref="optionRef"
+      :topicType="data.topicType"
       v-model:options="data.options"
       v-model:correctOption="data.correctOption"
     />
@@ -67,62 +67,48 @@ const defaultData = {
     }
   ],
   // 解析
-  parsing: ''
-};
-
-const typesParams = ref({
+  parsing: '',
   // 试题分类
   categoryId: '',
   // 题目类型
   topicType: TOPIC_TYPE.SINGLE_CHOICE,
   // 题目难度
   level: LEVEL_TYPES.EASY
-});
+};
 
-const data = ref(JSON.parse(JSON.stringify(defaultData)));
+const data = ref<QuestionType>(JSON.parse(JSON.stringify(defaultData)));
 
 // 是否选择题
 const isChoice = computed(() => {
   const { SINGLE_CHOICE, MULTIPLE_CHOICE } = TOPIC_TYPE;
-  return [SINGLE_CHOICE, MULTIPLE_CHOICE].includes(typesParams.value.topicType);
+  return [SINGLE_CHOICE, MULTIPLE_CHOICE].includes(data.value.topicType);
 });
 // 是否填空题
 const isBlank = computed(() => {
   const { FILL_IN_THE_BLANKS } = TOPIC_TYPE;
-  return typesParams.value.topicType === FILL_IN_THE_BLANKS;
+  return data.value.topicType === FILL_IN_THE_BLANKS;
 });
 
 // 重置
-const singleOptionRef = ref();
+const optionRef = ref();
 const reset = () => {
-  Object.assign(data.value, {
-    topic: '',
-    correctOption: '',
-    options: [],
-    parsing: ''
-  });
-  Object.assign(typesParams.value, {
-    categoryId: '',
-    topicType: 0,
-    level: 0
-  });
-  data.value = JSON.parse(JSON.stringify(defaultData));
+  Object.assign(data.value, JSON.parse(JSON.stringify(defaultData)));
 };
 // 提交
 const submit = () => {
   let verify = false;
   // 选择题
   if (isChoice.value) {
-    verify = singleOptionRef.value.checkParams();
+    verify = optionRef.value.checkParams();
   }
   // 填空题
-  if (typesParams.value.topicType === TOPIC_TYPE.FILL_IN_THE_BLANKS) {
+  if (data.value.topicType === TOPIC_TYPE.FILL_IN_THE_BLANKS) {
     verify = data.value.correctOption !== '';
   }
   if (verify && data.value.topic.trim()) {
-    const params = Object.assign({}, typesParams.value, data.value);
+    const params = Object.assign({}, data.value, data.value);
     // 不是选择题情况下清空选项
-    if (isChoice.value) {
+    if (isBlank.value) {
       params.options = [];
     }
     if (isEdit.value) {
@@ -171,23 +157,27 @@ if (id) {
 async function getQuestionDetail(params: { id: string }) {
   try {
     const result = await questionDetail(params);
-    const typesParamsKeys = Object.keys(typesParams.value);
-    const dataKeys = Object.keys(data.value);
-    const typesParamsMap: any = {};
-    const dataMap: any = {};
-    for (const key of typesParamsKeys) {
-      typesParamsMap[key] = result[key];
-    }
-    for (const key of dataKeys) {
-      dataMap[key] = result[key];
-    }
-    Object.assign(typesParams.value, typesParamsMap);
-    Object.assign(data.value, dataMap);
-    console.log('data.value', data.value);
+    Object.assign(data.value, result);
+    optionRef.value.initMuCorrectOptionValue(result.options.length);
+    optionRef.value.initAnswer(result.correctOption);
   } catch (error) {
     console.log(error);
   }
 }
+
+// 题目类型改变时
+const handleTopicTypeChange = () => {
+  data.value.correctOption = '';
+  const { topicType } = data.value;
+  const { MULTIPLE_CHOICE, SINGLE_CHOICE } = TOPIC_TYPE;
+  // 选择题 要把options填充
+  if ([MULTIPLE_CHOICE, SINGLE_CHOICE].includes(topicType) && !data.value.options.length) {
+    data.value.options = [...defaultData.options];
+  }
+  if (topicType === TOPIC_TYPE.MULTIPLE_CHOICE) {
+    optionRef.value && optionRef.value.initMuCorrectOptionValue();
+  }
+};
 </script>
 
 <style lang="scss">

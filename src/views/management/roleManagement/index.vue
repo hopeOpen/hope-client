@@ -1,6 +1,6 @@
 <template>
   <div class="role-wrapper">
-    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+    <el-tabs v-model="activeName" class="demo-tabs">
       <el-tab-pane v-for="tab in tabs" :key="tab.key" :name="tab.key" :label="tab.label">
         <component :is="tab.component"></component>
       </el-tab-pane>
@@ -18,7 +18,7 @@ const tabs = [
     component: ''
   },
   {
-    label: '页面控制',
+    label: '页面配置',
     key: 'page',
     component: PageControl
   }

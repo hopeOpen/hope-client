@@ -21,6 +21,7 @@
           v-model="muCorrectOptionValue[index]"
           :label="getOptionsLabel(index)"
           size="large"
+          @change="checkboxChange"
         />
         <h-editor class="h-editor" :currentIndex="index" :placeholder="placeholder" v-model:html="item.answer" />
         <p class="operation" :class="actionIndex === index && 'is-show'">
@@ -41,7 +42,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { ref, defineEmits, defineExpose, defineProps, computed, watch } from 'vue';
+import { ref, defineEmits, defineExpose, defineProps, computed } from 'vue';
 import { ElMessage } from 'element-plus';
 import HEditor from '@/views/components/editor/index.vue';
 import { TOPIC_TYPE } from '@/constants';
@@ -56,20 +57,6 @@ type PropsType = {
 };
 const emit = defineEmits(['update:options', 'update:correctOption']);
 const props = defineProps<PropsType>();
-
-// 切换题目类型时 清空已选
-watch(
-  () => props.topicType,
-  (val) => {
-    muCorrectOptionValue.value.length = 0;
-    // 多选特殊处理
-    correctOptionValue.value = '';
-    if (val === TOPIC_TYPE.MULTIPLE_CHOICE) {
-      muCorrectOptionValue.value.push(...new Array(optionsValue.value.length).fill(false));
-    }
-  }
-);
-
 // 选项
 const optionsValue = computed({
   get() {
@@ -88,22 +75,34 @@ const correctOptionValue = computed({
     emit('update:correctOption', val);
   }
 });
+
 // 多选答案
 const muCorrectOptionValue = ref(new Array(optionsValue.value.length).fill(false));
-watch(
-  muCorrectOptionValue,
-  (val) => {
-    correctOptionValue.value = '';
-    let value = '';
-    val.forEach((item, index) => {
-      if (item) {
-        value = `${value}${optionsValue.value[index].label}`;
-      }
-    });
-    correctOptionValue.value = value;
-  },
-  { deep: true }
-);
+
+// checkbox 改变时触发生成正确答案
+const checkboxChange = () => {
+  let value = '';
+  muCorrectOptionValue.value.forEach((item, index) => {
+    if (item) {
+      value = `${value}${optionsValue.value[index].label}`;
+    }
+  });
+  correctOptionValue.value = value;
+};
+
+// 初始化多答案
+const initMuCorrectOptionValue = (length: number) => {
+  muCorrectOptionValue.value.length = 0;
+  muCorrectOptionValue.value.push(...new Array(length || optionsValue.value.length).fill(false));
+};
+
+// 初始化答案
+const initAnswer = (answer: string) => {
+  answer.split('').forEach((item) => {
+    const index = `${item}`.charCodeAt(0) - 65;
+    muCorrectOptionValue.value[index] = true;
+  });
+};
 
 const placeholder = '选项，点此编辑；选中即设置为正确答案 (必填)';
 
@@ -160,7 +159,9 @@ const checkParams = () => {
 };
 
 defineExpose({
-  checkParams
+  checkParams,
+  initAnswer,
+  initMuCorrectOptionValue
 });
 
 const handleDelete = (index: number) => {
