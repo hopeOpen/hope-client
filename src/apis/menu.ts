@@ -9,3 +9,13 @@ export const getUserMenus = async (params: any): Promise<any> => {
 export const getMenusConfig = async (): Promise<any> => {
   return await $post('/menu/config');
 };
+
+// 新增菜单
+export const addMenu = async (params: any): Promise<any> => {
+  return await $post('/menu/add', params);
+};
+
+// 更新菜单
+export const updateMenu = async (params: any): Promise<any> => {
+  return await $post('/menu/update', params);
+};

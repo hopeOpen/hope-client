@@ -24,10 +24,19 @@ const tabs = [
   }
 ];
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .role-wrapper {
   background: white;
   padding: 10px 20px 20px;
   box-sizing: border-box;
+  height: 100%;
+  .el-tabs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .el-tabs__content {
+      height: 100%;
+    }
+  }
 }
 </style>

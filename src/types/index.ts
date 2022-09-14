@@ -93,3 +93,12 @@ export interface QuestionFilterType {
   pageSize: number;
   pageNum: number;
 }
+
+// 菜单配置类型
+export interface MenuType {
+  id?: number;
+  name: string;
+  index: number | string;
+  parentId?: number;
+  sign: string;
+}
