@@ -26,9 +26,16 @@ body {
   margin: 0;
   padding: 0;
 }
+* {
+  ::after,
+  ::before {
+    box-sizing: border-box;
+  }
+}
 #app {
   width: 100vw;
   height: 100vh;
+  color: #333;
 }
 
 .fade-enter-active,

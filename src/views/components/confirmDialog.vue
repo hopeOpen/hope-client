@@ -1,8 +1,8 @@
 <template>
-  <el-dialog v-model="visible" :title="props.title" width="480px" class="confirm-dialog-wrapper">
+  <el-dialog v-model="visible" :title="props.title" :width="props.width" class="confirm-dialog-wrapper">
     <template #footer>
       <el-button type="primary" @click="handleConfirm">
-        {{ buttnName }}
+        {{ buttonName }}
       </el-button>
       <el-button @click="handleCancel">取消</el-button>
     </template>
@@ -19,21 +19,39 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  buttnName: {
+  buttonName: {
     type: String,
     default: '确定'
+  },
+  width: {
+    type: String,
+    default: '480px'
+  },
+  // 自定义确认事件
+  customConfirm: {
+    type: Function
+  },
+  // 自定义取消事件
+  customCancel: {
+    type: Function
   }
 });
 
 const handleConfirm = () => {
-  console.log('handleConfirm');
+  if (props.customConfirm) {
+    props.customConfirm();
+    return;
+  }
   if (resolve.value) {
     resolve.value();
   }
   visible.value = false;
 };
 const handleCancel = () => {
-  console.log('handleCancel');
+  if (props.customCancel) {
+    props.customCancel();
+    return;
+  }
   if (reject.value) {
     reject.value();
   }
@@ -47,8 +65,16 @@ const message = () => {
   });
   return p;
 };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
 defineExpose({
-  message
+  message,
+  open,
+  close
 });
 </script>
 <style lang="scss">
