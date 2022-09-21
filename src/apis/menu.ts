@@ -19,3 +19,13 @@ export const addMenu = async (params: any): Promise<any> => {
 export const updateMenu = async (params: any): Promise<any> => {
   return await $post('/menu/update', params);
 };
+
+// 删除页面配置
+export const deleteMenu = async (params: { id: number; index: number; parentId: number }): Promise<any> => {
+  return await $post('/menu/delete', params);
+};
+
+// 批量修页面配置index
+export const updateMenuIndex = async (params: { id: number; index: number; parentId: number }) => {
+  return await $post('/menu/updateIndex', params);
+};

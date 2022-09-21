@@ -1,43 +1,43 @@
 export interface NavType {
-  name: string;
+  title: string;
   // element plus 图标组件
   icon: string;
   path?: string;
   routeName?: string;
   sign: string;
-  subnavs?: Array<NavType>;
+  children?: Array<NavType>;
 }
 
-export const navData: Array<NavType> = [
+export const navDatas: Array<NavType> = [
   {
-    name: '个人概括',
+    title: '个人概括',
     icon: 'PieChart',
     path: '/index',
     routeName: 'Index',
     sign: 'manage.menu.index'
   },
   {
-    name: '管理中心',
+    title: '管理中心',
     icon: 'SetUp',
     path: 'management',
     sign: 'manage.menu.management',
-    subnavs: [
+    children: [
       {
-        name: '个人中心',
+        title: '个人中心',
         icon: 'User',
         path: '/management/personalCenter',
         routeName: 'PersonalCenter',
         sign: 'manage.menu.personalCenter'
       },
       {
-        name: '用户管理',
+        title: '用户管理',
         icon: 'Monitor',
         path: '/management/userManagement',
         routeName: 'UserManagement',
         sign: 'manage.menu.userManagement'
       },
       {
-        name: '角色管理',
+        title: '角色管理',
         icon: 'Key',
         path: '/management/roleManagement',
         routeName: 'RoleManagement',
@@ -46,27 +46,27 @@ export const navData: Array<NavType> = [
     ]
   },
   {
-    name: '学前准备',
+    title: '学前准备',
     icon: 'Notification',
     path: 'paper',
     sign: 'manage.menu.paper',
-    subnavs: [
+    children: [
       {
-        name: '试卷管理',
+        title: '试卷管理',
         icon: 'Document',
         path: '/paper/testPaperManage',
         routeName: 'TestPaperManage',
         sign: 'manage.menu.testPaperManage'
       },
       {
-        name: '题目管理',
+        title: '题目管理',
         icon: 'Edit',
         path: '/paper/testQuestion',
         routeName: 'TestQuestion',
         sign: 'manage.menu.testQuestion'
       },
       {
-        name: '题库管理',
+        title: '题库管理',
         icon: 'Collection',
         path: '/paper/questionBank',
         routeName: 'QuestionBank',

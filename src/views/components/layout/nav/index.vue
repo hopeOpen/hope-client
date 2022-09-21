@@ -13,25 +13,25 @@
       @select="handleSelect"
     >
       <template v-for="nav in navs">
-        <el-menu-item :index="nav.path" :key="nav.sign" v-if="!nav.subnavs">
+        <el-menu-item :index="nav.path" :key="nav.sign" v-if="!nav.children">
           <el-icon>
             <component :is="nav.icon"></component>
           </el-icon>
-          <span>{{ nav.name }}</span>
+          <span>{{ nav.title }}</span>
         </el-menu-item>
         <el-sub-menu v-else :key="`${nav.sign}-`" :index="nav.path">
           <template #title>
             <el-icon>
               <component :is="nav.icon"></component>
             </el-icon>
-            <span>{{ nav.name }}</span>
+            <span>{{ nav.title }}</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item :index="childNav.path" v-for="childNav in nav.subnavs" :key="childNav.sign">
+            <el-menu-item :index="childNav.path" v-for="childNav in nav.children" :key="childNav.sign">
               <el-icon>
                 <component :is="childNav.icon"></component>
               </el-icon>
-              <span>{{ childNav.name }}</span>
+              <span>{{ childNav.title }}</span>
             </el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
@@ -40,42 +40,31 @@
   </aside>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
+<script lang="ts" setup>
+import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter, useRoute } from 'vue-router';
-export default defineComponent({
-  name: 'Nav',
-  setup() {
-    const store = useStore();
-    const router = useRouter();
-    const route = useRoute();
-    const isCollapse = computed(() => {
-      return store.state.isCollapse;
-    });
-    const handleOpen = (key: string, keyPath: string[]) => {
-      console.log(key, keyPath);
-    };
-    const handleClose = (key: string, keyPath: string[]) => {
-      console.log(key, keyPath);
-    };
-    const handleSelect = (val: string) => {
-      router.push(val);
-    };
-    const activeMenu = computed(() => {
-      const { path } = route;
-      return path;
-    });
-    return {
-      navs: computed(() => store.state.nav.navs),
-      activeMenu,
-      isCollapse,
-      handleOpen,
-      handleClose,
-      handleSelect
-    };
-  }
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
+const isCollapse = computed(() => {
+  return store.state.isCollapse;
 });
+const handleOpen = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath);
+};
+const handleClose = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath);
+};
+const handleSelect = (val: string) => {
+  console.log('handleSelect', val);
+  router.push(val);
+};
+const activeMenu = computed(() => {
+  const { path } = route;
+  return path;
+});
+const navs = computed(() => store.state.nav.navs);
 </script>
 
 <style lang="scss" scoped>

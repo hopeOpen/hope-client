@@ -12,6 +12,7 @@ export default (): Array<RouteRecordRaw> => {
       component: () => import(/* webpackChunkName: "layout" */ '@/views/components/layout/index.vue'),
       meta: {
         title: '个人概括',
+        icon: 'PieChart',
         sign: 'manage.menu.index'
       },
       children: [
@@ -21,6 +22,7 @@ export default (): Array<RouteRecordRaw> => {
           component: () => import(/* webpackChunkName: "home" */ '../views/personalSummary/index.vue'),
           meta: {
             title: '个人概括',
+            icon: 'PieChart',
             sign: 'manage.menu.index'
           }
         }
