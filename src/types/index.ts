@@ -98,7 +98,7 @@ export interface QuestionFilterType {
 export interface MenuType {
   id?: number;
   name: string;
-  index: number | string;
+  index: number;
   parentId?: number;
   sign: string;
 }

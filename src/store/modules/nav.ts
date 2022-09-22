@@ -1,7 +1,8 @@
 /**
  * 菜单类
  */
-import { navData, NavType } from '@/views/components/layout/nav/navData';
+import { NavType } from '@/views/components/layout/nav/navData';
+// import { navDatas } from '@/views/components/layout/nav/navData';
 import { getUserMenus } from '@/apis/menu';
 import { RouteRecordRaw } from 'vue-router';
 import router from '@/router';
@@ -56,20 +57,24 @@ const actions = {
     await dispatch('getUserMenus', {});
     // 菜单权限key集合
     const menusKeys = state.userMenus.map((item: any) => item.sign);
+    const menuMap = new Map(state.userMenus.map((item: any) => [item.sign, item]));
+
     // 路由集合
     let addRoutes = [...personalSummaryRouters(), ...managementRouters(), ...paperRouters()];
+    // TODO: 暂时注释
     // 初始化导航菜单
-    const authNavData = navData.filter((nav: NavType) => {
-      if (nav.subnavs) {
-        let defaultSubnav = [...nav.subnavs];
-        defaultSubnav = defaultSubnav.filter((sub: NavType) => menusKeys.includes(sub.sign));
-        if (defaultSubnav.length) {
-          nav.subnavs = defaultSubnav;
-        }
-      }
-      return menusKeys.includes(nav.sign);
-    });
-    await dispatch('changeNavsActions', authNavData);
+    // const authNavData = navDatas.filter((nav: NavType) => {
+    //   if (nav.children) {
+    //     let defaultSubnav = [...nav.children];
+    //     defaultSubnav = defaultSubnav.filter((sub: NavType) => menusKeys.includes(sub.sign));
+    //     if (defaultSubnav.length) {
+    //       nav.children = defaultSubnav;
+    //     }
+    //   }
+    //   return menusKeys.includes(nav.sign);
+    // });
+    // console.log('authNavData', authNavData, navDatas);
+    // await dispatch('changeNavsActions', authNavData);
     // 筛选出有权限的路由
     addRoutes = addRoutes.filter((routeItem: RouteRecordRaw) => {
       if (routeItem.children) {
@@ -83,6 +88,47 @@ const actions = {
     addRoutes.forEach((item) => {
       router.addRoute(item);
     });
+
+    // 设置路由index
+    const authNavData = JSON.parse(JSON.stringify(addRoutes));
+    authNavData.forEach((item: any) => {
+      const value: any = menuMap.get(item.meta.sign) || { index: 0 };
+      item.meta.index = value.index;
+      if (item.children) {
+        item.children.forEach((child: any) => {
+          child.meta.index = (menuMap.get(child.meta.sign) as any).index || 0;
+        });
+      }
+    });
+    // 路由排序
+    authNavData.sort((a: any, b: any) => {
+      if (a.children) {
+        a.children.sort((childA: any, childB: any) => {
+          return childA.meta.index - childB.meta.index;
+        });
+      }
+      if (b.children) {
+        b.children.sort((childA: any, childB: any) => {
+          return childA.meta.index - childB.meta.index;
+        });
+      }
+      return a.meta.index - b.meta.index;
+    });
+    const navData = authNavData.map((item: any) => {
+      return {
+        title: item.meta.title,
+        icon: item.meta.icon,
+        path: item.path,
+        children: item.children?.map((child: any) => {
+          return {
+            title: child.meta.title,
+            icon: child.meta.icon,
+            path: item.path === '/' ? child.path : `${item.path}/${child.path}`
+          };
+        })
+      };
+    });
+    await dispatch('changeNavsActions', navData);
   }
 };
 

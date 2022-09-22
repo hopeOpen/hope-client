@@ -10,6 +10,7 @@ export default (): Array<RouteRecordRaw> => {
       component: () => import(/* webpackChunkName: "layout" */ '@/views/components/layout/index.vue'),
       meta: {
         title: '管理中心',
+        icon: 'SetUp',
         sign: 'manage.menu.management'
       },
       children: [
@@ -21,6 +22,7 @@ export default (): Array<RouteRecordRaw> => {
             import(/* webpackChunkName: "personalCenter" */ '../views/management/personalCenter/index.vue'),
           meta: {
             title: '个人中心',
+            icon: 'User',
             sign: 'manage.menu.personalCenter'
           }
         },
@@ -32,6 +34,7 @@ export default (): Array<RouteRecordRaw> => {
             import(/* webpackChunkName: "userManagement" */ '../views/management/userManagement/index.vue'),
           meta: {
             title: '用户管理',
+            icon: 'Monitor',
             sign: 'manage.menu.userManagement'
           }
         },
@@ -43,6 +46,7 @@ export default (): Array<RouteRecordRaw> => {
             import(/* webpackChunkName: "roleManagement" */ '../views/management/roleManagement/index.vue'),
           meta: {
             title: '角色管理',
+            icon: 'Key',
             sign: 'manage.menu.roleManagement'
           }
         }

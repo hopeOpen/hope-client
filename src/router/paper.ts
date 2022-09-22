@@ -10,6 +10,7 @@ export default (): Array<RouteRecordRaw> => {
       component: () => import(/* webpackChunkName: "layout" */ '@/views/components/layout/index.vue'),
       meta: {
         title: '学前准备',
+        icon: 'Notification',
         sign: 'manage.menu.paper'
       },
       children: [
@@ -20,6 +21,7 @@ export default (): Array<RouteRecordRaw> => {
           component: () => import(/* webpackChunkName: "testQuestion" */ '../views/paper/testQuestion/index.vue'),
           meta: {
             title: '题目管理',
+            icon: 'Edit',
             sign: 'manage.menu.testQuestion'
           }
         },
@@ -27,10 +29,11 @@ export default (): Array<RouteRecordRaw> => {
           // 题库管理
           path: 'questionBank',
           name: 'QuestionBank',
-          component: () => import(/* webpackChunkName: "testQuestion" */ '../views/paper/questionBank/index.vue'),
+          component: () => import(/* webpackChunkName: "questionBank" */ '../views/paper/questionBank/index.vue'),
           meta: {
             title: '题库管理',
-            sign: 'manage.menu.testQuestion'
+            icon: 'Collection',
+            sign: 'manage.menu.questionBank'
           }
         }
       ]

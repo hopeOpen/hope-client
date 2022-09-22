@@ -7,30 +7,24 @@
           <el-icon @click="handleAddPage"><CirclePlus /></el-icon>
         </el-tooltip>
       </header>
-      <el-tree
-        class="menu-tree"
-        node-key="id"
-        draggable
-        default-expand-all
-        :allow-drop="allowDrop"
-        :allow-drag="true"
-        :data="pageList"
-        :props="treeProps"
-        @node-drop="nodeDrop"
-      >
+      <el-tree class="menu-tree" node-key="id" default-expand-all :data="pageList" :props="treeProps">
+        <!-- :allow-drop="allowDrop"
+        :allow-drag="true" -->
+        <!-- draggable -->
+        <!-- 暂时注释 @node-drop="nodeDrop" -->
         <template #default="{ node, data }">
           <span class="custom-tree-node">
             <span>{{ node.label }}</span>
             <el-popover :width="100" :teleported="false" popper-class="menu-popover" placement="bottom" trigger="click">
               <template #reference>
-                <el-icon><CirclePlus /></el-icon>
+                <el-icon><More /></el-icon>
               </template>
               <template #default>
                 <div class="item-operate" @click="handleMenuEditor(data)">编辑</div>
-                <div class="item-operate">上方添加</div>
-                <div class="item-operate">上方添加</div>
+                <div class="item-operate" @click="handlePreAddPage(data)">上方添加</div>
+                <div class="item-operate" @click="handleNextAddPage(data)">下方添加</div>
                 <div class="item-operate" @click="handleAddPage(data)" v-if="!data.parentId">添加子页面</div>
-                <div class="item-operate">删除</div>
+                <div class="item-operate" @click="handleDeletePage(data)">删除</div>
               </template>
             </el-popover>
           </span>
@@ -66,11 +60,12 @@ import { getMenusConfig } from '@/apis/menu';
 import ConfirmDialog from '@/views/components/confirmDialog.vue';
 import { MenuType } from '@/types';
 import { ElMessage, FormInstance, FormRules } from 'element-plus';
-import type Node from 'element-plus/es/components/tree/src/model/node';
+// import type Node from 'element-plus/es/components/tree/src/model/node';
 // import type { DragEvents } from 'element-plus/es/components/tree/src/model/useDragNode';
 // import type { DropType } from 'element-plus/es/components/tree/src/tree.type';
-import { addMenu, updateMenu } from '@/apis/menu';
+import { addMenu, updateMenu, deleteMenu } from '@/apis/menu';
 const pageList = ref<MenuType[]>([]);
+// let pageListMap = new Map();
 const treeProps = {
   label: 'name',
   children: 'subMenus'
@@ -81,6 +76,7 @@ const fetchData = async () => {
     const result = await getMenusConfig();
     pageList.value.length = 0;
     pageList.value = result;
+    // pageListMap = new Map(result.map((item: any) => [item.id, item]));
   } catch (error) {
     console.log(error);
   }
@@ -88,36 +84,75 @@ const fetchData = async () => {
 fetchData();
 
 // tree
-// 判断节点是否能拖拽
-const allowDrop = (draggingNode: Node, dropNode: Node) => {
-  const currentData = draggingNode.data;
-  const currentDropData = dropNode.data;
-  // 一级与一级中互相换 二级同。不能跨级换
-  // currentData.parentId 存在值 说明是二级页面
-  if (currentData.parentId && currentDropData.parentId) {
-    return true;
-  }
-  // 不存在值 说明是一级
-  if (!currentData.parentId && !currentDropData.parentId) {
-    return true;
-  }
-};
-// 拖拽结束事件
-const nodeDrop = (draggingNode: Node, dropNode: Node, location: any) => {
-  console.log('nodeDrop', draggingNode, dropNode, location);
-  const currentData = draggingNode.data;
-  const currentDropData = dropNode.data;
-  const { name, sign, parentId } = currentData;
-  const { index } = currentDropData;
-  currentNode.value = currentData;
-  Object.assign(params.value, {
-    name,
-    sign,
-    index,
-    parentId
-  });
-  updateMenuAction();
-};
+// // 判断节点是否能拖拽
+// const allowDrop = (draggingNode: Node, dropNode: Node) => {
+//   const currentData = draggingNode.data;
+//   const currentDropData = dropNode.data;
+//   // 限制只能在同一父级下换顺序
+//   if (currentData.parentId !== currentDropData.parentId && currentData.parentId) {
+//     return false;
+//   }
+//   // 一级与一级中互相换 二级同。不能跨级换
+//   // currentData.parentId 存在值 说明是二级页面
+//   if (currentData.parentId && currentDropData.parentId) {
+//     return true;
+//   }
+//   // 不存在值 说明是一级
+//   if (!currentData.parentId && !currentDropData.parentId) {
+//     return true;
+//   }
+//   return false;
+// };
+// // 拖拽结束事件
+// const nodeDrop = (draggingNode: Node, dropNode: Node, insertType: string) => {
+//   console.log('nodeDrop', draggingNode.data, dropNode.data, insertType);
+//   const currentData = draggingNode.data;
+//   const currentDropData = dropNode.data;
+//   const { name, sign, parentId } = currentData;
+//   const { index } = currentDropData;
+//   currentNode.value = currentData;
+//   Object.assign(params.value, {
+//     name,
+//     sign,
+//     index,
+//     parentId
+//   });
+//   handlePageIndex(params.value, insertType, draggingNode);
+// };
+// 拖拽顺序后刷新
+// const handlePageIndex = (draggingNodeData: MenuType, insertType: string, draggingNode: Node) => {
+//   console.log('insertType', insertType);
+//   console.log('draggingNodeData--', draggingNodeData, pageListMap);
+//   const { parentId, index } = draggingNodeData;
+//   let allData = pageList.value;
+//   if (parentId) {
+//     allData = pageListMap.get(parentId).subMenus;
+//   }
+//   let meetsData: MenuType[] = [];
+//   switch (insertType) {
+//     // 在什么之前
+//     case 'before':
+//       meetsData = allData.filter((item) => {
+//         return item.index >= index && item.id !== currentNode.value.id;
+//       });
+//       // const data
+//       break;
+//     // 在什么之后
+//     case 'after':
+//       meetsData = allData.filter((item: MenuType) => {
+//         return item.index > draggingNode.data.index && item.index <= index && item.id !== currentNode.value.id;
+//       });
+//       break;
+//   }
+//   if (meetsData.length) {
+//     const params = meetsData.map((item: MenuType) => {
+//       return { id: item.id, index: insertType === 'insertType' ? item.index + 1 : item.index - 1 };
+//     });
+//     console.log(params);
+//     // updateMenuIndex()
+//   }
+//   console.log(meetsData);
+// };
 
 // 弹框
 const currentNode = ref();
@@ -138,8 +173,8 @@ const type = ref<string | null>();
 // 新增页面
 const handleAddPage = async (data: any = {}) => {
   console.log('handleAddPage', data);
-  const { id, subMenus = [] } = data;
   type.value = 'add';
+  const { id, subMenus = [] } = data;
   await confirmDialogRef.value.open();
   // 是否添加的是子页面
   params.value.parentId = id;
@@ -147,6 +182,23 @@ const handleAddPage = async (data: any = {}) => {
   // parentId 存在代表是二级页面
   params.value.index = id ? subMenus.length : pageList.value.length;
 };
+// 上方新增页面
+const handlePreAddPage = async (data: any) => {
+  type.value = 'add';
+  const { parentId, index } = data;
+  await confirmDialogRef.value.open();
+  params.value.parentId = parentId;
+  params.value.index = index;
+};
+// 下方新增页面
+const handleNextAddPage = async (data: any) => {
+  type.value = 'add';
+  const { parentId, index } = data;
+  await confirmDialogRef.value.open();
+  params.value.parentId = parentId;
+  params.value.index = index + 1;
+};
+
 // 新增页面请求
 const addNewPageAction = async () => {
   try {
@@ -174,6 +226,21 @@ const updateMenuAction = async () => {
     ElMessage({
       type: 'success',
       message: '更新成功'
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// 删除请求
+const handleDeletePage = async (data: any) => {
+  const { id, index, parentId } = data;
+  try {
+    await deleteMenu({ id, index, parentId });
+    fetchData();
+    ElMessage({
+      type: 'success',
+      message: '删除成功'
     });
   } catch (error) {
     console.log(error);
@@ -252,6 +319,7 @@ const validate = async (formEl: FormInstance | undefined) => {
         .custom-tree-node {
           display: flex;
           justify-content: space-between;
+          align-items: center;
           padding-right: 20px;
           box-sizing: border-box;
           width: 100%;
