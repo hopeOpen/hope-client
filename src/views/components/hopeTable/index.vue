@@ -1,5 +1,5 @@
 <template>
-  <div class="hope-table__block">
+  <div class="hope-table__block" v-loading="loading" element-loading-text="拼命加载中。。。">
     <div class="table-wrap">
       <el-table
         v-bind="props.tableConfig"
@@ -33,9 +33,17 @@
     </div>
     <footer class="footer">
       <div>
-        <el-button v-if="props.tableConfig.selection && multipleSelection" size="small" @click="handleDelete([], true)">
-          批量删除
-        </el-button>
+        <el-popconfirm
+          confirm-button-text="确定"
+          cancel-button-text="取消"
+          icon-color="#626AEF"
+          title="确认批量删除?"
+          @confirm="handleDelete([], true)"
+        >
+          <template #reference>
+            <el-button v-if="props.tableConfig.selection && multipleSelection" size="small">批量删除</el-button>
+          </template>
+        </el-popconfirm>
       </div>
       <el-pagination
         v-model:currentPage="queryValue.pageNum"
@@ -51,13 +59,13 @@
 </template>
 <script setup lang="ts">
 import { defineProps, computed, defineEmits, ref } from 'vue';
-import { QuestionFilterType, QuestionType } from '@/types/index';
 type PropsType = {
   tableData: any[];
   colConfig: any[];
   tableConfig: any;
-  query: QuestionFilterType;
+  query: any;
   total: number;
+  loading?: boolean;
 };
 const props = defineProps<PropsType>();
 const emit = defineEmits(['update:query', 'currentChange', 'sizeChange', 'edit', 'delete']);
@@ -75,7 +83,7 @@ const handleEdit = (data: any) => {
 };
 const handleDelete = (data: any, batch: boolean) => {
   emit('delete', {
-    ids: batch ? multipleSelection.value.map((item: QuestionType) => item.id) : [data.id]
+    ids: batch ? multipleSelection.value.map((item: any) => item.id) : [data.id]
   });
 };
 

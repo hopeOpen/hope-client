@@ -101,4 +101,13 @@ export interface MenuType {
   index: number;
   parentId?: number;
   sign: string;
+  subMenus?: MenuType[];
+}
+
+// 角色类型
+export interface RoleType {
+  id?: number | string;
+  menuConfig: number[];
+  roleName: string;
+  description: string;
 }
