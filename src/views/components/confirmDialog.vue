@@ -1,5 +1,11 @@
 <template>
-  <el-dialog v-model="visible" :title="props.title" :width="props.width" class="confirm-dialog-wrapper">
+  <el-dialog
+    v-model="visible"
+    :title="props.title"
+    :width="props.width"
+    class="confirm-dialog-wrapper"
+    @close="handleCancel"
+  >
     <template #footer>
       <el-button type="primary" @click="handleConfirm">
         {{ buttonName }}

@@ -20,6 +20,7 @@
         :tableData="tableData"
         :colConfig="colConfig"
         :total="total"
+        :loading="loading"
         @edit="handleEditor"
         @delete="handleDelete"
       >
@@ -100,6 +101,7 @@ watch(
   { deep: true }
 );
 
+const loading = ref<boolean>(false);
 const tableData: any = ref([]);
 const tableConfig = {
   width: '100%',
@@ -154,11 +156,14 @@ const treeToFlat = (arr: CategoryType[]) => {
 // 获取题目列表
 const fetchData = async () => {
   try {
+    loading.value = true;
     const result = await getQuestionList(query.value);
     tableData.value = result.list || [];
     total.value = result.total;
   } catch (error) {
     console.log(error);
+  } finally {
+    loading.value = false;
   }
 };
 fetchData();

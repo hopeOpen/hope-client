@@ -56,14 +56,13 @@
 </template>
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { getMenusConfig } from '@/apis/menu';
+import { getMenusConfig, addMenu, updateMenu, deleteMenu } from '@/apis/menu';
 import ConfirmDialog from '@/views/components/confirmDialog.vue';
 import { MenuType } from '@/types';
 import { ElMessage, FormInstance, FormRules } from 'element-plus';
 // import type Node from 'element-plus/es/components/tree/src/model/node';
 // import type { DragEvents } from 'element-plus/es/components/tree/src/model/useDragNode';
 // import type { DropType } from 'element-plus/es/components/tree/src/tree.type';
-import { addMenu, updateMenu, deleteMenu } from '@/apis/menu';
 const pageList = ref<MenuType[]>([]);
 // let pageListMap = new Map();
 const treeProps = {

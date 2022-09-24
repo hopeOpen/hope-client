@@ -10,12 +10,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import PageControl from './pageControl/index.vue';
-const activeName = ref('page');
+import roleConfig from './roleConfig/index.vue';
+const activeName = ref('role');
 const tabs = [
   {
     label: '角色权限',
     key: 'role',
-    component: ''
+    component: roleConfig
   },
   {
     label: '页面配置',
@@ -36,6 +37,9 @@ const tabs = [
     height: 100%;
     .el-tabs__content {
       height: 100%;
+      .el-tab-pane {
+        height: 100%;
+      }
     }
   }
 }
