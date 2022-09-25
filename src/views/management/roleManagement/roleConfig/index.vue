@@ -49,7 +49,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import { getRoles, addRole, deleteRole } from '@/apis/roles';
+import { getRoles, addRole, deleteRole, updateRole } from '@/apis/roles';
 import { RoleType, MenuType } from '@/types/index';
 import { getMenusConfig } from '@/apis/menu';
 import HopeTable from '@/views/components/hopeTable/index.vue';
@@ -152,27 +152,21 @@ const handleCheckChange = (data: MenuType, checked: boolean, indeterminate: bool
 
 // 编辑
 const handleEditor = async (data: RoleType) => {
-  console.log(data);
   const { id, menuConfig = '[]', roleName, description } = data;
-  console.log('befor--', JSON.parse(JSON.stringify(menuConfig)));
-  console.log('roleData.value===--', JSON.parse(JSON.stringify(roleData.value)));
   Object.assign(roleData.value, {
     id,
     menuConfig: JSON.parse(menuConfig as string),
     roleName,
     description
   });
-  console.log('after--', JSON.parse(JSON.stringify(roleData.value)));
   await confirmDialogRef.value.open();
   // 计算展示的页面配置
   handleCheckedKeys();
 };
 // 计算展示的页面配置
 const handleCheckedKeys = () => {
-  console.log('处理钱---', JSON.parse(JSON.stringify(roleData.value)));
   const kes: number[] = [];
   const { menuConfig } = roleData.value;
-  console.log('menuConfig----', menuConfig);
   menuConfig.forEach((id) => {
     const topPageData = menuConfigMap.get(id) || { subMenus: [] };
     // 子页面集合
@@ -206,27 +200,29 @@ const roleData = ref<RoleType>({
   description: ''
 });
 const add = async () => {
-  console.log('新增');
   await getMenusConfigAction();
   await confirmDialogRef.value.open();
 };
 // 自定义确认事件
 const customConfirm = async () => {
-  console.log('customConfirm');
   const { id } = roleData.value;
   // id 存在是编辑
-  if (id) {
-    console.log('edi');
-  } else {
-    console.log('add');
-    const params = { ...roleData.value };
-    delete params.id;
-    await addRole(params);
-    fetchData();
+  const params = { ...roleData.value };
+  try {
+    if (id) {
+      await updateRole(params);
+    } else {
+      delete params.id;
+      await addRole(params);
+    }
     ElMessage({
       type: 'success',
-      message: '新增成功'
+      message: id ? '更新成功' : '新增成功'
     });
+    fetchData();
+  } catch (error) {
+    console.log(error);
+  } finally {
     customCancel();
   }
 };
