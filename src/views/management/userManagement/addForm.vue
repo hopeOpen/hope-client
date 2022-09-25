@@ -19,7 +19,7 @@
     </el-form-item>
     <el-form-item label="角色" prop="roles">
       <el-checkbox-group v-model="userData.roles">
-        <el-checkbox :label="item.rule" v-for="item in ruleTypes" :key="item.rule">{{ item.label }}</el-checkbox>
+        <el-checkbox :label="item.id" v-for="item in ruleTypes" :key="item.id">{{ item.roleName }}</el-checkbox>
       </el-checkbox-group>
     </el-form-item>
     <el-form-item label="描述" prop="desc">
@@ -30,9 +30,9 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
-import { AddUserInfoType } from '@/types/index';
+import { AddUserInfoType, RoleType } from '@/types/index';
 import { FormRules } from 'element-plus';
-import { RULE_TYPES } from '@/constants/index';
+import { getRoles } from '@/apis/roles';
 export default defineComponent({
   name: 'AddForm',
   setup(props, { expose }) {
@@ -42,19 +42,10 @@ export default defineComponent({
       name: '',
       password: '',
       email: '',
-      roles: [RULE_TYPES.GENERAL],
+      roles: [],
       desc: ''
     });
-    const ruleTypes = [
-      {
-        rule: RULE_TYPES.ADMIN,
-        label: 'admin'
-      },
-      {
-        rule: RULE_TYPES.GENERAL,
-        label: '普通'
-      }
-    ];
+    const ruleTypes = ref<RoleType[]>([]);
     const rules = reactive<FormRules>({
       name: [
         { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -83,12 +74,21 @@ export default defineComponent({
           name: '',
           password: '',
           email: '',
-          roles: [RULE_TYPES.GENERAL],
+          roles: [],
           desc: ''
         },
         data
       );
     };
+    const getRolesAction = async () => {
+      try {
+        const result = await getRoles();
+        ruleTypes.value = result.list;
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getRolesAction();
     expose({
       userFormRef,
       userData,

@@ -1,12 +1,13 @@
 <template>
   <el-tree
+    ref="menuTreeRef"
     class="menu-tree"
     node-key="id"
     show-checkbox
     default-expand-all
-    :data="props.pageList"
-    :props="props.treeProps"
-    :default-checked-keys="checkedKeys"
+    :data="pageList"
+    :props="treeProps"
+    :default-checked-keys="checkedKeysValve"
     @check-change="handleCheckChange"
   >
     <template #default="{ node, data }">
@@ -17,17 +18,32 @@
   </el-tree>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, computed } from 'vue';
+import { defineProps, defineEmits, ref, toRefs, defineExpose } from 'vue';
 import { MenuType } from '@/types/index';
 const props = defineProps({
-  pageList: Array,
-  treeProps: Object,
-  checkedKeys: Array
+  pageList: {
+    type: Array,
+    default: () => []
+  },
+  treeProps: {
+    type: Array,
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    default: () => {}
+  }
 });
+const { pageList, treeProps } = toRefs(props);
+const menuTreeRef = ref();
 const emit = defineEmits(['check-change']);
-const checkedKeys = computed(() => {
-  return props.checkedKeys;
+
+// 设置目前选中的节点，使用此方法必须设置 node-key 属性
+const setCheckedKeys = (kes: number[]) => {
+  menuTreeRef.value.setCheckedKeys(kes);
+};
+
+defineExpose({
+  setCheckedKeys
 });
+
 /**
  * 当复选框被点击的时候触发
  * @params data 传递给 data 属性的数组中该节点所对应的对象
