@@ -38,9 +38,9 @@
           页面配置
         </span>
         <menu-tree
+          ref="menuTreeRef"
           :pageList="menuConfigData"
           :treeProps="treeProps"
-          :checkedKeys="checkedKeys"
           @check-change="handleCheckChange"
         />
       </div>
@@ -56,6 +56,7 @@ import HopeTable from '@/views/components/hopeTable/index.vue';
 import ConfirmDialog from '@/views/components/confirmDialog.vue';
 import MenuTree from './components/menuTree.vue';
 import { ElMessage } from 'element-plus';
+const menuTreeRef = ref();
 const confirmDialogRef = ref();
 // table 列展示
 const colConfig = [
@@ -130,9 +131,8 @@ const getMenusConfigAction = async () => {
     console.log(error);
   }
 };
+getMenusConfigAction();
 
-// 展示的 checkedKeys
-const checkedKeys = ref<number[]>([]);
 // 页面配置的回调
 const handleCheckChange = (data: MenuType, checked: boolean, indeterminate: boolean) => {
   const menuConfig = roleData.value.menuConfig;
@@ -154,31 +154,34 @@ const handleCheckChange = (data: MenuType, checked: boolean, indeterminate: bool
 const handleEditor = async (data: RoleType) => {
   console.log(data);
   const { id, menuConfig = '[]', roleName, description } = data;
+  console.log('befor--', JSON.parse(JSON.stringify(menuConfig)));
+  console.log('roleData.value===--', JSON.parse(JSON.stringify(roleData.value)));
   Object.assign(roleData.value, {
     id,
     menuConfig: JSON.parse(menuConfig as string),
     roleName,
     description
   });
-  await getMenusConfigAction();
+  console.log('after--', JSON.parse(JSON.stringify(roleData.value)));
+  await confirmDialogRef.value.open();
   // 计算展示的页面配置
   handleCheckedKeys();
-  confirmDialogRef.value.open();
 };
 // 计算展示的页面配置
 const handleCheckedKeys = () => {
-  checkedKeys.value.length = 0;
+  console.log('处理钱---', JSON.parse(JSON.stringify(roleData.value)));
+  const kes: number[] = [];
   const { menuConfig } = roleData.value;
+  console.log('menuConfig----', menuConfig);
   menuConfig.forEach((id) => {
     const topPageData = menuConfigMap.get(id) || { subMenus: [] };
-    console.log('topPageData', topPageData);
     // 子页面集合
     const subMenus = topPageData?.subMenus || [];
     if (!subMenus.length) {
-      checkedKeys.value.push(id);
+      kes.push(id);
     }
   });
-  console.log('checkedKeys.value', checkedKeys.value);
+  menuTreeRef.value.setCheckedKeys(kes);
 };
 
 // 删除
