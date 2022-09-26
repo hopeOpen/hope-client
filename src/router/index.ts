@@ -12,7 +12,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '/:catchAll(.*)',
-        component: () => import(/* webpackChunkName: "login" */ '../views/notfound/index.vue'),
+        component: () => import(/* webpackChunkName: "404" */ '../views/notfound/index.vue'),
         meta: {
           key: 'NOTFOUND',
           title: 'PAGE NOT FOUND'
