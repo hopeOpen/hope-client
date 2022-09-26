@@ -1,18 +1,17 @@
 /**
  * 菜单类
  */
-import { NavType } from '@/views/components/layout/nav/navData';
-// import { navDatas } from '@/views/components/layout/nav/navData';
 import { getUserMenus } from '@/apis/menu';
 import { RouteRecordRaw } from 'vue-router';
 import router from '@/router';
 import personalSummaryRouters from '@/router/personalSummary';
 import managementRouters from '@/router/management';
 import paperRouters from '@/router/paper';
+import { NavType, NavDataType, MenuType } from '@/types';
 
 interface NavState {
   navs: Array<NavType>;
-  userMenus: any;
+  userMenus: MenuType[];
 }
 const state: NavState = {
   // 左侧菜单
@@ -56,8 +55,8 @@ const actions = {
     // 获取用户菜单
     await dispatch('getUserMenus', {});
     // 菜单权限key集合
-    const menusKeys = state.userMenus.map((item: any) => item.sign);
-    const menuMap = new Map(state.userMenus.map((item: any) => [item.sign, item]));
+    const menusKeys = state.userMenus.map((item: MenuType) => item.sign);
+    const menuMap = new Map(state.userMenus.map((item: MenuType) => [item.sign, item]));
 
     // 路由集合
     let addRoutes = [...personalSummaryRouters(), ...managementRouters(), ...paperRouters()];
@@ -91,42 +90,48 @@ const actions = {
 
     // 设置路由index
     const authNavData = JSON.parse(JSON.stringify(addRoutes));
-    authNavData.forEach((item: any) => {
+    authNavData.forEach((item: NavDataType) => {
       const value: any = menuMap.get(item.meta.sign) || { index: 0 };
       item.meta.index = value.index;
       if (item.children) {
-        item.children.forEach((child: any) => {
+        item.children.forEach((child: NavDataType) => {
           child.meta.index = (menuMap.get(child.meta.sign) as any).index || 0;
         });
       }
     });
     // 路由排序
-    authNavData.sort((a: any, b: any) => {
+    authNavData.sort((a: NavDataType, b: NavDataType) => {
       if (a.children) {
-        a.children.sort((childA: any, childB: any) => {
+        a.children.sort((childA: NavDataType, childB: NavDataType) => {
           return childA.meta.index - childB.meta.index;
         });
       }
       if (b.children) {
-        b.children.sort((childA: any, childB: any) => {
+        b.children.sort((childA: NavDataType, childB: NavDataType) => {
           return childA.meta.index - childB.meta.index;
         });
       }
       return a.meta.index - b.meta.index;
     });
-    const navData = authNavData.map((item: any) => {
-      return {
+    const navData = authNavData.map((item: NavDataType) => {
+      const { banAloneShow } = item.meta;
+      const defaultValue: NavType = {
         title: item.meta.title,
         icon: item.meta.icon,
-        path: item.path,
-        children: item.children?.map((child: any) => {
+        path: item.path
+      };
+      if (banAloneShow) {
+        defaultValue.path = item.redirect;
+      } else {
+        defaultValue.children = item.children?.map((child: NavDataType) => {
           return {
             title: child.meta.title,
             icon: child.meta.icon,
             path: item.path === '/' ? child.path : `${item.path}/${child.path}`
           };
-        })
-      };
+        });
+      }
+      return defaultValue;
     });
     await dispatch('changeNavsActions', navData);
   }

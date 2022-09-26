@@ -13,7 +13,8 @@ export default (): Array<RouteRecordRaw> => {
       meta: {
         title: '个人概括',
         icon: 'PieChart',
-        sign: 'manage.menu.index'
+        sign: 'manage.menu.index',
+        banAloneShow: true
       },
       children: [
         {

@@ -8,12 +8,10 @@
       :default-active="activeMenu"
       :collapse-transition="true"
       :unique-opened="false"
-      @open="handleOpen"
-      @close="handleClose"
       @select="handleSelect"
     >
       <template v-for="nav in navs">
-        <el-menu-item :index="nav.path" :key="nav.sign" v-if="!nav.children">
+        <el-menu-item :index="nav.path" :key="nav.path" v-if="!nav.children">
           <el-icon>
             <component :is="nav.icon"></component>
           </el-icon>
@@ -47,23 +45,11 @@ import { useRouter, useRoute } from 'vue-router';
 const store = useStore();
 const router = useRouter();
 const route = useRoute();
-const isCollapse = computed(() => {
-  return store.state.isCollapse;
-});
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
 const handleSelect = (val: string) => {
-  console.log('handleSelect', val);
   router.push(val);
 };
-const activeMenu = computed(() => {
-  const { path } = route;
-  return path;
-});
+const isCollapse = computed(() => store.state.isCollapse);
+const activeMenu = computed(() => route.path);
 const navs = computed(() => store.state.nav.navs);
 </script>
 

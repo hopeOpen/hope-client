@@ -15,3 +15,8 @@ export const addRole = async (payload: RoleType): Promise<any> => {
 export const deleteRole = async (payload: { ids: number[] }): Promise<any> => {
   return await $post('/roles/delete', payload);
 };
+
+// 更新角色
+export const updateRole = async (payload: RoleType): Promise<any> => {
+  return await $post('/roles/update', payload);
+};

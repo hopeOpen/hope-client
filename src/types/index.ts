@@ -111,3 +111,26 @@ export interface RoleType {
   roleName: string;
   description: string;
 }
+
+// 菜单配置类型
+export interface NavType {
+  title: string;
+  // element plus 图标组件
+  icon: string;
+  path?: string;
+  children?: Array<NavType>;
+}
+
+// 路由配置类型
+export interface NavDataType {
+  redirect?: string;
+  meta: {
+    title: string;
+    icon: string;
+    index: number;
+    sign: string;
+    banAloneShow?: boolean;
+  };
+  path: string;
+  children?: NavDataType[];
+}
