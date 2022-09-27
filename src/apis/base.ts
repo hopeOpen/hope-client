@@ -41,8 +41,16 @@ axiosInstance.interceptors.response.use((response) => {
         message: '为登陆或登陆已过期，请重新登陆',
         type: 'error'
       });
+      const path = router.options.history.state.back as string;
+      const query: { redirect?: string } = {};
+      if (path !== '/login') {
+        query.redirect = path;
+      }
       setTimeout(() => {
-        router.push('/login');
+        router.push({
+          path: '/login',
+          query
+        });
       }, 1000);
     } else {
       const errorMessage = code === 500 ? message : responseData.data.message;

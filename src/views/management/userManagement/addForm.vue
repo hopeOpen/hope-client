@@ -19,7 +19,7 @@
     </el-form-item>
     <el-form-item label="角色" prop="roles">
       <el-checkbox-group v-model="userData.roles">
-        <el-checkbox :label="item.id" v-for="item in ruleTypes" :key="item.id">{{ item.roleName }}</el-checkbox>
+        <el-checkbox :label="item.id" v-for="item in props.ruleTypes" :key="item.id">{{ item.roleName }}</el-checkbox>
       </el-checkbox-group>
     </el-form-item>
     <el-form-item label="描述" prop="desc">
@@ -28,80 +28,62 @@
   </el-form>
 </template>
 
-<script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
+<script lang="ts" setup>
+import { reactive, ref, defineExpose, defineProps } from 'vue';
 import { AddUserInfoType, RoleType } from '@/types/index';
 import { FormRules } from 'element-plus';
-import { getRoles } from '@/apis/roles';
-export default defineComponent({
-  name: 'AddForm',
-  setup(props, { expose }) {
-    const eType = ref('add');
-    const userFormRef = ref();
-    const userData = reactive<AddUserInfoType>({
+const props = defineProps<{
+  ruleTypes: RoleType[];
+}>();
+console.log('props', props);
+const eType = ref('add');
+const userFormRef = ref();
+const userData = reactive<AddUserInfoType>({
+  name: '',
+  password: '',
+  email: '',
+  roles: [],
+  desc: ''
+});
+const rules = reactive<FormRules>({
+  name: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 18, message: '长度3-18位', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 18, message: '长度6-18位', trigger: 'blur' }
+  ],
+  email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+  roles: [
+    {
+      type: 'array',
+      required: true,
+      message: '选择用户角色',
+      trigger: 'change'
+    }
+  ],
+  desc: [{ min: 0, max: 100, message: '长度6-18位', trigger: 'blur' }]
+});
+const init = (type = 'add', data: any) => {
+  eType.value = type;
+  Object.assign(
+    userData,
+    {
       name: '',
       password: '',
       email: '',
       roles: [],
       desc: ''
-    });
-    const ruleTypes = ref<RoleType[]>([]);
-    const rules = reactive<FormRules>({
-      name: [
-        { required: true, message: '请输入用户名', trigger: 'blur' },
-        { min: 3, max: 18, message: '长度3-18位', trigger: 'blur' }
-      ],
-      password: [
-        { required: true, message: '请输入密码', trigger: 'blur' },
-        { min: 6, max: 18, message: '长度6-18位', trigger: 'blur' }
-      ],
-      email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
-      roles: [
-        {
-          type: 'array',
-          required: true,
-          message: '选择用户角色',
-          trigger: 'change'
-        }
-      ],
-      desc: [{ min: 0, max: 100, message: '长度6-18位', trigger: 'blur' }]
-    });
-    const init = (type = 'add', data: any) => {
-      eType.value = type;
-      Object.assign(
-        userData,
-        {
-          name: '',
-          password: '',
-          email: '',
-          roles: [],
-          desc: ''
-        },
-        data
-      );
-    };
-    const getRolesAction = async () => {
-      try {
-        const result = await getRoles();
-        ruleTypes.value = result.list;
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getRolesAction();
-    expose({
-      userFormRef,
-      userData,
-      init
-    });
-    return {
-      userFormRef,
-      userData,
-      rules,
-      eType,
-      ruleTypes
-    };
-  }
+    },
+    data
+  );
+  userData.roles = (data && data.roles) || [];
+};
+defineExpose({
+  userFormRef,
+  userData,
+  init
 });
 </script>
 

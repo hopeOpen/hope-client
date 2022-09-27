@@ -38,11 +38,7 @@ const info = reactive({
   name: '',
   password: ''
 });
-// 重定向地址
-console.log('route.query.path', route.query);
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const redirect: string | null = route.query.redirect;
+const redirect: string | null = route.query.redirect as string;
 // 其他参数
 const otherQuery = (query: any): LocationQueryRaw => {
   return Object.keys(query).reduce((acc: LocationQueryRaw, cur: string) => {
@@ -56,7 +52,6 @@ otherQuery(route.query);
 const onSubmit = () => {
   login(info)
     .then(async (data) => {
-      console.log(data);
       if (data.code === 200) {
         ElMessage({
           message: '登陆成功',
