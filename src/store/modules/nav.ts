@@ -7,7 +7,7 @@ import router from '@/router';
 import personalSummaryRouters from '@/router/personalSummary';
 import managementRouters from '@/router/management';
 import paperRouters from '@/router/paper';
-import { NavType, NavDataType, MenuType } from '@/types';
+import { NavType, NavDataType, MenuType } from '@/types/index';
 
 interface NavState {
   navs: Array<NavType>;

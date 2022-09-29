@@ -14,7 +14,11 @@
       <template #default="scope">{{ scope.row.name }}</template>
     </el-table-column>
     <el-table-column property="email" width="170" label="邮箱" />
-    <el-table-column property="role" label="角色" show-overflow-tooltip />
+    <el-table-column property="role" label="角色" show-overflow-tooltip>
+      <template #default="scope">
+        <span class="role-style" v-for="item in scope.row.roles || []" :key="item">{{ getRoleLabel(item) }}</span>
+      </template>
+    </el-table-column>
     <el-table-column label="操作" width="120">
       <template #default="scope">
         <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
@@ -45,8 +49,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed, reactive } from 'vue';
+<script lang="ts" setup>
+import { ref, computed, reactive, defineExpose, defineEmits, defineProps } from 'vue';
+import { RoleType } from '@/types';
 interface User {
   id: string | number;
   name: string;
@@ -54,68 +59,67 @@ interface User {
   role: number;
   updatedTime: string;
 }
-export default defineComponent({
-  name: 'UserTable',
-  props: {
-    data: {
-      type: Object,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      default: () => {}
-    }
-  },
-  setup(props, { emit, expose }) {
-    const paginationQuery = reactive({
-      pageNum: 1,
-      pageSize: 10,
-      total: 0
-    });
-    paginationQuery.total = props?.data?.total || 0;
-    const multipleSelection = ref<User[]>([]);
-    const handleSelectionChange = (val: User[]) => {
-      multipleSelection.value = val;
-    };
-    // 列表数据
-    const list = computed(() => {
-      return props?.data?.list || [];
-    });
-    const handleSizeChange = (size: number) => {
-      emit('sizeChange', size);
-    };
-    const handleCurrentChange = (currentPage: number) => {
-      emit('currentChange', currentPage);
-    };
-    const handleEdit = (data: any) => {
-      emit('edit', data);
-    };
-    const handleDelete = (data: any) => {
-      emit('delete', {
-        ids: [data.id]
-      });
-    };
-    const init = () => {
-      multipleSelection.value = [];
-    };
-    expose({
-      multipleSelection,
-      init
-    });
-    return {
-      list,
-      props,
-      paginationQuery,
-      handleSelectionChange,
-      handleSizeChange,
-      handleCurrentChange,
-      handleEdit,
-      handleDelete
-    };
-  }
+const props = defineProps<{
+  data: any;
+  ruleTypes: RoleType[];
+}>();
+console.log('props-----==', props.ruleTypes);
+const emit = defineEmits(['sizeChange', 'currentChange', 'edit', 'delete']);
+const paginationQuery = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  total: 0
+});
+paginationQuery.total = props?.data?.total || 0;
+const multipleSelection = ref<User[]>([]);
+const handleSelectionChange = (val: User[]) => {
+  multipleSelection.value = val;
+};
+// 列表数据
+const list = computed(() => {
+  return props?.data?.list || [];
+});
+const handleSizeChange = (size: number) => {
+  emit('sizeChange', size);
+};
+const handleCurrentChange = (currentPage: number) => {
+  emit('currentChange', currentPage);
+};
+const handleEdit = (data: any) => {
+  emit('edit', data);
+};
+const handleDelete = (data: any) => {
+  emit('delete', {
+    ids: [data.id]
+  });
+};
+const init = () => {
+  multipleSelection.value = [];
+};
+const getRoleLabel = (id: number | string) => {
+  const result = props.ruleTypes.find((item) => item.id == id);
+  return result?.roleName || '无权限';
+};
+defineExpose({
+  multipleSelection,
+  init
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .user-table {
   margin-top: 20px;
+  flex: 1;
+  .role-style {
+    display: inline-block;
+    background: rgb(235, 235, 235);
+    padding: 1px 4px;
+    border-radius: 4px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+  .role-style + .role-style {
+    margin-left: 4px;
+  }
 }
 .pagination {
   padding: 10px 0;
