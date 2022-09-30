@@ -32,52 +32,42 @@
   </el-row>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, reactive } from 'vue';
+<script lang="ts" setup>
+import { computed, reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
-export default defineComponent({
-  name: 'TopMenu',
-  setup() {
-    // 菜单
-    const menus = reactive([
-      {
-        title: '个人中心',
-        path: '/setting/personalCenter'
-      }
-    ]);
-    // vuex
-    const store = useStore();
-    const router = useRouter();
-    const route = useRoute();
-    // 设置按钮icon样式
-    const switchStyle = computed(() => {
-      return store.state.isCollapse ? 'open-style' : 'close-style';
-    });
-    const userInfo = computed(() => store.state.userInfo);
-    // 修改左侧菜单是否闭合
-    const changeCollapse = () => {
-      store.commit('setCollapse');
-    };
-    // 选择下拉菜单
-    const selectMenu = (val: string) => {
-      router.push(val);
-    };
-    // 退出登陆
-    const logout = async () => {
-      await store.dispatch('logout');
-      router.push(`/login?redirect=${route.fullPath}`);
-    };
-    return {
-      menus,
-      userInfo,
-      switchStyle,
-      changeCollapse,
-      selectMenu,
-      logout
-    };
+const { commit, getters, dispatch } = useStore();
+const router = useRouter();
+const route = useRoute();
+
+// 菜单
+const menus = reactive([
+  {
+    title: '个人中心',
+    path: '/setting/personalCenter'
   }
+]);
+// 设置按钮icon样式
+const switchStyle = computed(() => {
+  return getters['getIsCollapse'] ? 'open-style' : 'close-style';
 });
+const userInfo = computed(() => getters['getUserInfo']);
+
+// 修改左侧菜单是否闭合
+const changeCollapse = () => {
+  commit('setCollapse');
+};
+
+// 选择下拉菜单
+const selectMenu = (val: string) => {
+  router.push(val);
+};
+
+// 退出登陆
+const logout = async () => {
+  await dispatch('logout');
+  router.push(`/login?redirect=${route.fullPath}`);
+};
 </script>
 
 <style lang="scss" scoped>

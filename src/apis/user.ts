@@ -33,6 +33,12 @@ export const deleteUser = async (params: DeleteUserIdsType): Promise<any> => {
   return await $post('/user/delete', params);
 };
 
+// 登录
 export const login = async (params: any): Promise<any> => {
   return await $post('/user/login', params);
+};
+
+// 获取用户信息
+export const userInfo = async (params?: any): Promise<any> => {
+  return await $post('/user/info', params);
 };

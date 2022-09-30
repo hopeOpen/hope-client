@@ -63,7 +63,7 @@ const props = defineProps<{
   data: any;
   ruleTypes: RoleType[];
 }>();
-console.log('props-----==', props.ruleTypes);
+
 const emit = defineEmits(['sizeChange', 'currentChange', 'edit', 'delete']);
 const paginationQuery = reactive({
   pageNum: 1,
@@ -98,7 +98,7 @@ const init = () => {
 };
 const getRoleLabel = (id: number | string) => {
   const result = props.ruleTypes.find((item) => item.id == id);
-  return result?.roleName || '无权限';
+  return result?.roleName || '-';
 };
 defineExpose({
   multipleSelection,

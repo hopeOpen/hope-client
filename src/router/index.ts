@@ -45,7 +45,8 @@ router.beforeEach(async (to, from, next) => {
     if (whiteList.includes(to.path) || init) {
       return next();
     }
-
+    // 获取用户信息
+    await store.dispatch('getUserInfo');
     // 获取菜单
     await store.dispatch('handleUserMenus');
 
