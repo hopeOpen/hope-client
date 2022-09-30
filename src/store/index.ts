@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import { userInfo } from '@/apis/user';
 
 import Cookie from 'js-cookie';
 interface State {
@@ -36,16 +37,34 @@ const store = createStore<State>({
   getters: {
     getToken() {
       return Cookie.get('hope_token');
+    },
+    getIsCollapse(state) {
+      return state.isCollapse;
+    },
+    getUserInfo(state) {
+      return state.userInfo;
     }
   },
   mutations: {
     setCollapse(state) {
       state.isCollapse = !state.isCollapse;
+    },
+    updateUserInfo(state, payload) {
+      state.userInfo = payload;
     }
   },
   actions: {
     logout() {
       Cookie.remove('hope_token');
+    },
+    async getUserInfo({ commit }) {
+      console.log('获取用户信息');
+      try {
+        const result = await userInfo();
+        commit('updateUserInfo', result);
+      } catch (error) {
+        console.log(error);
+      }
     }
   },
   modules
